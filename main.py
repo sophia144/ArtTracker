@@ -26,27 +26,38 @@ root.wm_iconphoto(False, photo)
 #https://www.flaticon.com/free-icon/paint-brush_587377
 
 
-#formatting the home window
-bg_frame = LabelFrame(root, padx=30, pady=30, bg='#7B8292', bd=0)
+#formatting the artworks window
+bg_frame = LabelFrame(root, padx=0, pady=30, bg='#7B8292', bd=0)
 bg_frame.grid(row=0, column=0, padx=50, pady=50, sticky="NESW", rowspan=3)
 
 item_frame_1 = LabelFrame(bg_frame, padx=10, pady=10, bg='#4D5660', bd=0)
-item_frame_1.grid(row=0, column=0, sticky="NESW", padx=10, pady=10)
+item_frame_1.grid(row=0, column=1, sticky="NESW", padx=10, pady=10)
 item_frame_2 = LabelFrame(bg_frame, padx=10, pady=10, bg='#4D5660', bd=0)
-item_frame_2.grid(row=1, column=0, sticky="NESW", padx=10, pady=10)
+item_frame_2.grid(row=1, column=1, sticky="NESW", padx=10, pady=10)
 item_frame_3 = LabelFrame(bg_frame, padx=10, pady=10, bg='#4D5660', bd=0)
-item_frame_3.grid(row=2, column=0, sticky="NESW", padx=10, pady=10)
+item_frame_3.grid(row=2, column=1, sticky="NESW", padx=10, pady=10)
 item_frame_4 = LabelFrame(bg_frame, padx=10, pady=10, bg='#4D5660', bd=0)
-item_frame_4.grid(row=3, column=0, sticky="NESW", padx=10, pady=10)
+item_frame_4.grid(row=3, column=1, sticky="NESW", padx=10, pady=10)
 item_frame_5 = LabelFrame(bg_frame, padx=10, pady=10, bg='#4D5660', bd=0)
-item_frame_5.grid(row=4, column=0, sticky="NESW", padx=10, pady=10)
+item_frame_5.grid(row=4, column=1, sticky="NESW", padx=10, pady=10)
 
-bg_frame.columnconfigure(0,weight=1) 
+bg_frame.columnconfigure(0,weight=1)
+bg_frame.columnconfigure(1,weight=6)
+bg_frame.columnconfigure(2,weight=1)
+
 bg_frame.rowconfigure(0,weight=1) # row weight 20%
 bg_frame.rowconfigure(1,weight=1) # row weight 20%
 bg_frame.rowconfigure(2,weight=1) # row weight 20%
 bg_frame.rowconfigure(3,weight=1) # row weight 20%
 bg_frame.rowconfigure(4,weight=1) # row weight 20%
+
+forward_img = ImageTk.PhotoImage(Image.open("ArtTracker/resources/forward_icon.png"))
+back_img = ImageTk.PhotoImage(Image.open("ArtTracker/resources/back_icon.png"))
+
+forward_button = Button(bg_frame, text=">", image=forward_img, bg='#7B8292', bd=0)
+forward_button.grid(row=2, column=2, sticky="NESW")
+back_button = Button(bg_frame, text=">", image=back_img, bg='#7B8292', bd=0)
+back_button.grid(row=2, column=0, sticky="NESW")
 
 
 item_frame_1.rowconfigure(0,weight=1)
@@ -57,17 +68,46 @@ item_frame_5.rowconfigure(0,weight=1)
 
 
 placeholder_1 = Label(item_frame_1, text="Placeholder", fg='white', bg='#4D5660', font=("Segoe UI Black", 18))
-placeholder_1.grid(row=0, column=0)
+placeholder_1.pack(side=LEFT)
 placeholder_2 = Label(item_frame_2, text="Placeholder", fg='white', bg='#4D5660', font=("Segoe UI Black", 18))
-placeholder_2.grid(row=0, column=0)
+placeholder_2.pack(side=LEFT)
 placeholder_3 = Label(item_frame_3, text="Placeholder", fg='white', bg='#4D5660', font=("Segoe UI Black", 18))
-placeholder_3.grid(row=0, column=0)
+placeholder_3.pack(side=LEFT)
 placeholder_4 = Label(item_frame_4, text="Placeholder", fg='white', bg='#4D5660', font=("Segoe UI Black", 18))
-placeholder_4.grid(row=0, column=0)
+placeholder_4.pack(side=LEFT)
 placeholder_5 = Label(item_frame_5, text="Placeholder", fg='white', bg='#4D5660', font=("Segoe UI Black", 18))
-placeholder_5.grid(row=0, column=0)
+placeholder_5.pack(side=LEFT)
 
 
+delete_img = ImageTk.PhotoImage(Image.open("ArtTracker/resources/delete_icon.png"))
+
+delete_1 = Button(item_frame_1, bd=0, text="Delete", image=delete_img, bg='#9399AC')
+delete_1.pack(side=RIGHT)
+delete_2 = Button(item_frame_2, bd=0, text="Delete", image=delete_img, bg='#9399AC')
+delete_2.pack(side=RIGHT)
+delete_3 = Button(item_frame_3, bd=0, text="Delete", image=delete_img, bg='#9399AC')
+delete_3.pack(side=RIGHT)
+delete_4 = Button(item_frame_4, bd=0, text="Delete", image=delete_img, bg='#9399AC')
+delete_4.pack(side=RIGHT)
+delete_5 = Button(item_frame_5, bd=0, text="Delete", image=delete_img, bg='#9399AC')
+delete_5.pack(side=RIGHT)
+
+
+edit_img = ImageTk.PhotoImage(Image.open("ArtTracker/resources/edit_icon.png"))
+
+edit_1 = Button(item_frame_1, bd=0, text="Edit", image=edit_img, bg='#9399AC')
+edit_1.pack(side=RIGHT, padx=10)
+edit_2 = Button(item_frame_2, bd=0, text="Edit", image=edit_img, bg='#9399AC')
+edit_2.pack(side=RIGHT, padx=10)
+edit_3 = Button(item_frame_3, bd=0, text="Edit", image=edit_img, bg='#9399AC')
+edit_3.pack(side=RIGHT, padx=10)
+edit_4 = Button(item_frame_4, bd=0, text="Edit", image=edit_img, bg='#9399AC')
+edit_4.pack(side=RIGHT, padx=10)
+edit_5 = Button(item_frame_5, bd=0, text="Edit", image=edit_img, bg='#9399AC')
+edit_5.pack(side=RIGHT, padx=10)
+
+
+#formatting the options strip
 options_frame = LabelFrame(root, padx=30, pady=30, bg='#4D5660', bd=0)
 options_frame.grid(row=0, column=2, sticky="NESW", rowspan=3)
 
