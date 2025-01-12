@@ -20,8 +20,7 @@ root.rowconfigure(2, weight=1) # row weight 100%
 
 
 #changing the icon
-ico = Image.open("ArtTracker/resources/painticon.ico")
-photo = ImageTk.PhotoImage(ico)
+photo = ImageTk.PhotoImage(Image.open("ArtTracker/resources/painticon.ico"))
 root.wm_iconphoto(False, photo)
 #https://www.flaticon.com/free-icon/paint-brush_587377
 
@@ -107,6 +106,38 @@ edit_5 = Button(item_frame_5, bd=0, text="Edit", image=edit_img, bg='#9399AC')
 edit_5.pack(side=RIGHT, padx=10)
 
 
+#creating the options functionality
+def choose_arttype():
+    global arttype_dialog
+    arttype_dialog = Toplevel(root)
+    arttype_dialog.title("Choose art type")
+    arttype_dialog.geometry("400x200")
+    arttype_dialog.configure(bg='#9399AC')
+    arttype_dialog.wm_iconphoto(False, photo)
+    arttype_dialog.grab_set()
+
+    arttype_dialog.rowconfigure(0, weight=1) # row weight 100%
+    arttype_dialog.columnconfigure(0, weight=1) # column weight 50%
+    arttype_dialog.columnconfigure(1, weight=1) # column weight 50%
+
+    def original_press():
+        #original_window()
+        arttype_dialog.destroy()
+    
+    def fanart_press():
+        #fanart_window()
+        arttype_dialog.destroy()
+
+
+    original_btn = Button(arttype_dialog, text="Original", bg='#4D5660', fg='#FFFFFF', bd=0, command=original_press, font=("Segoe UI Black", 18))
+    original_btn.grid(row=0, column=0, padx=10, pady=10, sticky="NESW")
+    fanart_btn = Button(arttype_dialog, text="Fanart", bg='#4D5660', fg='#FFFFFF', bd=0, command=fanart_press, font=("Segoe UI Black", 18))
+    fanart_btn.grid(row=0, column=1, padx=10, pady=10, sticky="NESW")
+
+    
+
+
+
 #formatting the options strip
 options_frame = LabelFrame(root, padx=30, pady=30, bg='#4D5660', bd=0)
 options_frame.grid(row=0, column=2, sticky="NESW", rowspan=3)
@@ -127,7 +158,7 @@ filter_bg.grid(row=2, column=1, padx=10, pady=10, columnspan=3)
 
 search_btn = Button(search_bg, relief='flat', text="Search", image=search_img, bg='#E2CDB4', bd=10)
 search_btn.grid(row=0, column=0, padx=10, pady=10)
-add_btn = Button(add_bg, relief='flat', text="Add", image=add_img, bg='#E2CDB4', bd=10)
+add_btn = Button(add_bg, relief='flat', text="Add", image=add_img, bg='#E2CDB4', bd=10, command=choose_arttype)
 add_btn.grid(row=0, column=0, padx=10, pady=10)
 filter_btn = Button(filter_bg, relief='flat', text="Filter", image=filter_img, bg='#E2CDB4', bd=10)
 filter_btn.grid(row=0, column=0, padx=10, pady=10)
