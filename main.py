@@ -110,223 +110,6 @@ root.wm_iconphoto(False, photo)
 fanart_list, original_list = read_csv()
 all_artworks = fanart_list + original_list
 
-def update_variables():
-    global all_artworks
-    write_csv(fanart_list, original_list)
-    all_artworks = fanart_list + original_list
-
-#save artowrk functions
-def save_original():
-    name = name_inp.get()
-    desc = desc_inp.get()
-    status = clicked.get()
-    medium = medium_inp.get()
-    subject = subject_inp.get()
-
-    new_original = Original(name, desc, status, medium, subject)
-    original_list.append(new_original)
-    update_variables()
-    creation_window.destroy()
-
-
-def save_fanart():
-    name = name_inp.get()
-    desc = desc_inp.get()
-    status = clicked.get()
-    medium = medium_inp.get()
-    fandom = fandom_inp.get()
-    character = character_inp.get()
-
-    new_fanart = Fanart(name, desc, status, medium, fandom, character)
-    fanart_list.append(new_fanart)
-    update_variables()
-    creation_window.destroy()
-
-
-#update database functions
-def update_original(artwork):
-    creation_window.destroy()
-
-
-def update_fanart(artwork):
-    creation_window.destroy()
-
-
-#filter database functions
-def filter_originals():
-    creation_window.destroy()
-
-
-def filter_fanarts():
-    creation_window.destroy()
-
-
-
-#artwork info window
-def artwork_info_window(arttype, action, artwork=None):
-    global creation_window
-    global name_inp
-    global clicked
-    global medium_inp
-    global subject_inp
-    global desc_inp
-    global fandom_inp
-    global character_inp
-
-    creation_window = Toplevel(root)
-    creation_window.title("Create Artwork")
-    creation_window.geometry("1000x625")
-    creation_window.configure(bg='#7B8292')
-    creation_window.wm_iconphoto(False, photo)
-    creation_window.grab_set()
-
-    #configuring the main grid 
-    creation_window.columnconfigure(0,weight=1) 
-    creation_window.columnconfigure(1,weight=1) 
-    creation_window.columnconfigure(2,weight=1) 
-    creation_window.columnconfigure(3,weight=7) 
-    creation_window.rowconfigure(0, weight=1) 
-    creation_window.rowconfigure(1, weight=1) 
-    creation_window.rowconfigure(2, weight=1) 
-
-    #creating the frame where the information will be input
-    info_frame = LabelFrame(creation_window, padx=20, pady=10, bg='#9399AC', bd=0)
-    info_frame.grid(row=0, column=3, padx=50, pady=50, sticky="NESW", rowspan=3)
-    
-    info_frame.columnconfigure(0,weight=1)
-    info_frame.columnconfigure(1,weight=1)
-    info_frame.rowconfigure(0,weight=1)
-    info_frame.rowconfigure(1,weight=1)
-    info_frame.rowconfigure(2,weight=1)
-    info_frame.rowconfigure(3,weight=1)
-    info_frame.rowconfigure(4,weight=1)
-    info_frame.rowconfigure(5,weight=1)
-    info_frame.rowconfigure(6,weight=1)
-    info_frame.rowconfigure(7,weight=1)
-
-    #creating the labels and entries
-    name_lbl = Label(info_frame, text="Name", bg='#9399AC', fg='#4D5660', font=("Segoe UI Black", 22))
-    name_lbl.grid(row=0, column=0, sticky="W")
-    name_inp = Entry(info_frame, width=50, bg='#FFFFFF', fg='#4D5660', borderwidth=8, relief="flat", font=("Helvetica", 16))
-    name_inp.grid(row=1, column=0, sticky="W", padx=(2, 50))
-
-    status_lbl = Label(info_frame, text="Status", bg='#9399AC', fg='#4D5660', font=("Segoe UI Black", 22))
-    status_lbl.grid(row=2, column=0, sticky="W")
-    # datatype of dropdown menu
-    clicked = StringVar() 
-    clicked.set("Planned") 
-    # Create Dropdown menu 
-    options = ["Planned", "In Progress", "Completed"] 
-    status_inp = OptionMenu(info_frame, clicked, *options) 
-    status_inp.config(width=50, bg='#FFFFFF', fg='#4D5660', borderwidth=8, relief="flat", font=("Helvetica", 16), anchor="w")
-    status_inp.grid(row=3, column=0, sticky="W", padx=(2, 50))
-
-    medium_lbl = Label(info_frame, text="Medium", bg='#9399AC', fg='#4D5660', font=("Segoe UI Black", 22))
-    medium_lbl.grid(row=4, column=0, sticky="W")
-    medium_inp = Entry(info_frame, width=50, bg='#FFFFFF', fg='#4D5660', borderwidth=8, relief="flat", font=("Helvetica", 16))
-    medium_inp.grid(row=5, column=0, sticky="W", padx=(2, 50))
-
-
-
-    #ORIGINAL ARTWORK
-    if arttype == Original:
-        subject_lbl = Label(info_frame, text="Subject", bg='#9399AC', fg='#4D5660', font=("Segoe UI Black", 22))
-        subject_lbl.grid(row=6, column=0, sticky="W")
-        subject_inp = Entry(info_frame, width=50, bg='#FFFFFF', fg='#4D5660', borderwidth=8, relief="flat", font=("Helvetica", 16))
-        subject_inp.grid(row=7, column=0, sticky="W", padx=(2, 50), pady=(0, 20))
-
-        desc_lbl = Label(info_frame, text="Description", bg='#9399AC', fg='#4D5660', font=("Segoe UI Black", 22))
-        desc_lbl.grid(row=0, column=1, padx=0, pady=0, sticky="W")
-        desc_inp = Entry(info_frame, width=50, bg='#FFFFFF', fg='#4D5660', borderwidth=8, relief="flat", font=("Helvetica", 16))
-        desc_inp.grid(row=1, column=1, sticky="W", padx=(2, 50))
-
-        btn_bg = Frame(info_frame, bg='#FFFFFF', bd=5) 
-        btn_bg.grid(row=2, column=1, sticky="W", pady=0, rowspan=2)
-        
-
-        #fills textboxes with pre-existing info
-        if action == 'edit' or action == 'view':
-            name_inp.insert(0, artwork.name)
-            #status_inp.insert(0, artwork.status)
-            medium_inp.insert(0, artwork.medium)
-            subject_inp.insert(0, artwork.subject)
-            desc_inp.insert(0, artwork.desc)
-        #makes textboxes uneditable if viewing
-        if action == 'view':
-            name_inp.config(state='disabled')
-            status_inp.config(state='disabled')
-            medium_inp.config(state='disabled')
-            subject_inp.config(state='disabled')
-            desc_inp.config(state='disabled')
-
-
-        #adding various buttons depending on what the user is doing
-        if action == 'create':
-            save_btn = Button(btn_bg, text="Save", bg='#E2CDB4', fg='#FFFFFF', relief='flat', bd=0, font=("Segoe UI Black", 18), command=save_original)
-            save_btn.grid(row=0, column=0, padx=0, pady=0, sticky="W")
-        elif action == 'edit':
-            update_btn = Button(btn_bg, text="Update", bg='#E2CDB4', fg='#FFFFFF', relief='flat', bd=0, font=("Segoe UI Black", 18), command=lambda: update_original('placeholder'))
-            update_btn.grid(row=0, column=0, padx=0, pady=0, sticky="W")
-        elif action == 'filter':
-            save_btn = Button(btn_bg, text="Go", bg='#E2CDB4', fg='#FFFFFF', relief='flat', bd=0, font=("Segoe UI Black", 18), command=filter_originals)
-            save_btn.grid(row=0, column=0, padx=0, pady=0, sticky="W")
-        
-
-
-    #FANART
-    else:
-        fandom_lbl = Label(info_frame, text="Fandom", bg='#9399AC', fg='#4D5660', font=("Segoe UI Black", 22))
-        fandom_lbl.grid(row=6, column=0, sticky="W")
-        fandom_inp = Entry(info_frame, width=50, bg='#FFFFFF', fg='#4D5660', borderwidth=8, relief="flat", font=("Helvetica", 16))
-        fandom_inp.grid(row=7, column=0, sticky="W", padx=(2, 50), pady=(0, 20))
-
-        character_lbl = Label(info_frame, text="Character", bg='#9399AC', fg='#4D5660', font=("Segoe UI Black", 22))
-        character_lbl.grid(row=0, column=1, padx=0, pady=0, sticky="W")
-        character_inp = Entry(info_frame, width=50, bg='#FFFFFF', fg='#4D5660', borderwidth=8, relief="flat", font=("Helvetica", 16))
-        character_inp.grid(row=1, column=1, sticky="W", padx=(2, 50))
-
-        desc_lbl = Label(info_frame, text="Description", bg='#9399AC', fg='#4D5660', font=("Segoe UI Black", 22))
-        desc_lbl.grid(row=2, column=1, padx=0, pady=0, sticky="W")
-        desc_inp = Entry(info_frame, width=50, bg='#FFFFFF', fg='#4D5660', borderwidth=8, relief="flat", font=("Helvetica", 16))
-        desc_inp.grid(row=3, column=1, sticky="W", padx=(2, 50))
-
-        btn_bg = Frame(info_frame, bg='#FFFFFF', bd=5) 
-        btn_bg.grid(row=4, column=1, sticky="W", pady=0, rowspan=2)
-
-
-        #fills textboxes with pre-existing info
-        if action == 'edit' or action == 'view':
-            name_inp.insert(0, artwork.name)
-            #status_inp.insert(0, artwork.status)
-            medium_inp.insert(0, artwork.medium)
-            fandom_inp.insert(0, artwork.fandom)
-            character_inp.insert(0, artwork.character)
-            desc_inp.insert(0, artwork.desc)
-        #makes textboxes uneditable if viewing
-        if action == 'view':
-            name_inp.config(state='disabled')
-            status_inp.config(state='disabled')
-            medium_inp.config(state='disabled')
-            fandom_inp.config(state='disabled')
-            character_inp.config(state='disabled')
-            desc_inp.config(state='disabled')
-
-
-        #adding various buttons depending on what the user is doing
-        if action == 'create':
-            save_btn = Button(btn_bg, text="Save", bg='#E2CDB4', fg='#FFFFFF', relief='flat', bd=0, font=("Segoe UI Black", 18), command=save_fanart)
-            save_btn.grid(row=0, column=0, padx=0, pady=0, sticky="W")
-        elif action == 'edit':
-            save_btn = Button(btn_bg, text="Update", bg='#E2CDB4', fg='#FFFFFF', relief='flat', bd=0, font=("Segoe UI Black", 18), command=lambda: update_fanart(artwork))
-            save_btn.grid(row=0, column=0, padx=0, pady=0, sticky="W")
-        elif action == 'filter':
-            filter_btn = Button(btn_bg, text="Go", bg='#E2CDB4', fg='#FFFFFF', relief='flat', bd=0, font=("Segoe UI Black", 18), command=filter_fanarts)
-            filter_btn.grid(row=0, column=0, padx=0, pady=0, sticky="W")
-
-
-
-
-
 #formatting the artworks window
 bg_frame = LabelFrame(root, padx=0, pady=30, bg='#7B8292', bd=0)
 bg_frame.grid(row=0, column=0, padx=50, pady=50, sticky="NESW", rowspan=3)
@@ -406,40 +189,293 @@ def create_buttons_list(all_artworks):
         except:
             pass
     
-    return artwork_buttons, artworks_by_page
+        return artwork_buttons, artworks_by_page
 
 
-artwork_buttons, artworks_by_page = create_buttons_list(all_artworks)
+def setup_home(all_artworks):
+    global artwork_button_1
+    global artwork_button_2
+    global artwork_button_3
+    global artwork_button_4
+    global artwork_button_5
+    artwork_buttons, artworks_by_page = create_buttons_list(all_artworks)
 
-try:
-    artwork_button_1 = artwork_buttons[0]
-    artwork_button_1.pack(side=LEFT)
-except: 
-    item_frame_1.destroy()
+    try:
+        artwork_button_1 = artwork_buttons[0]
+        artwork_button_1.pack(side=LEFT)
+    except: 
+        item_frame_1.destroy()
 
-try:
-    artwork_button_2 = artwork_buttons[1]
-    artwork_button_2.pack(side=LEFT)
-except: 
-    item_frame_2.destroy()
+    try:
+        artwork_button_2 = artwork_buttons[1]
+        artwork_button_2.pack(side=LEFT)
+    except: 
+        item_frame_2.destroy()
 
-try:
-    artwork_button_3 = artwork_buttons[2]
-    artwork_button_3.pack(side=LEFT)
-except:
-    item_frame_3.destroy()
+    try:
+        artwork_button_3 = artwork_buttons[2]
+        artwork_button_3.pack(side=LEFT)
+    except:
+        item_frame_3.destroy()
 
-try:
-    artwork_button_4 = artwork_buttons[3]
-    artwork_button_4.pack(side=LEFT)
-except:
-    item_frame_4.destroy()
+    try:
+        artwork_button_4 = artwork_buttons[3]
+        artwork_button_4.pack(side=LEFT)
+    except:
+        item_frame_4.destroy()
 
-try:
-    artwork_button_5 = artwork_buttons[4]
-    artwork_button_5.pack(side=LEFT)
-except:
-    item_frame_5.destroy()
+    try:
+        artwork_button_5 = artwork_buttons[4]
+        artwork_button_5.pack(side=LEFT)
+    except:
+        item_frame_5.destroy()
+
+
+def forget_home_buttons():
+    artwork_button_1.destroy()
+    artwork_button_2.destroy()
+    artwork_button_3.destroy()
+    artwork_button_4.destroy()
+    artwork_button_5.destroy()
+
+
+setup_home(all_artworks)
+
+
+
+def update_variables():
+    global all_artworks
+    write_csv(fanart_list, original_list)
+    all_artworks = fanart_list + original_list
+    forget_home_buttons()
+    setup_home(all_artworks)
+
+#save artowrk functions
+def save_original():
+    name = name_inp.get()
+    desc = desc_inp.get()
+    status = clicked.get()
+    medium = medium_inp.get()
+    subject = subject_inp.get()
+
+    new_original = Original(name, desc, status, medium, subject)
+    original_list.append(new_original)
+    update_variables()
+    creation_window.destroy()
+
+
+def save_fanart():
+    name = name_inp.get()
+    desc = desc_inp.get()
+    status = clicked.get()
+    medium = medium_inp.get()
+    fandom = fandom_inp.get()
+    character = character_inp.get()
+
+    new_fanart = Fanart(name, desc, status, medium, fandom, character)
+    fanart_list.append(new_fanart)
+    update_variables()
+    creation_window.destroy()
+
+
+#update database functions
+def update_original(artwork):
+    artwork.name = name_inp.get()
+    artwork.desc = desc_inp.get()
+    artwork.status = clicked.get()
+    artwork.medium = medium_inp.get()
+    artwork.subject = subject_inp.get()
+
+    update_variables()
+    creation_window.destroy()
+
+
+def update_fanart(artwork):
+    artwork.name = name_inp.get()
+    artwork.desc = desc_inp.get()
+    artwork.status = clicked.get()
+    artwork.medium = medium_inp.get()
+    artwork.fandom = fandom_inp.get()
+    artwork.character = character_inp.get()
+
+    update_variables()
+    creation_window.destroy()
+
+
+#filter database functions
+def filter_originals():
+    creation_window.destroy()
+
+
+def filter_fanarts():
+    creation_window.destroy()
+
+
+
+#artwork info window
+def artwork_info_window(arttype, action, artwork=None):
+    global creation_window
+    global name_inp
+    global clicked
+    global medium_inp
+    global subject_inp
+    global desc_inp
+    global fandom_inp
+    global character_inp
+
+    creation_window = Toplevel(root)
+    creation_window.title("Create Artwork")
+    creation_window.geometry("1000x625")
+    creation_window.configure(bg='#7B8292')
+    creation_window.wm_iconphoto(False, photo)
+    creation_window.grab_set()
+
+    #configuring the main grid 
+    creation_window.columnconfigure(0,weight=1) 
+    creation_window.columnconfigure(1,weight=1) 
+    creation_window.columnconfigure(2,weight=1) 
+    creation_window.columnconfigure(3,weight=7) 
+    creation_window.rowconfigure(0, weight=1) 
+    creation_window.rowconfigure(1, weight=1) 
+    creation_window.rowconfigure(2, weight=1) 
+
+
+    #creating the frame where the information will be input
+    info_frame = LabelFrame(creation_window, padx=20, pady=10, bg='#9399AC', bd=0)
+    info_frame.grid(row=0, column=3, padx=50, pady=50, sticky="NESW", rowspan=3)
+    
+    info_frame.columnconfigure(0,weight=1)
+    info_frame.columnconfigure(1,weight=1)
+    info_frame.rowconfigure(0,weight=1)
+    info_frame.rowconfigure(1,weight=1)
+    info_frame.rowconfigure(2,weight=1)
+    info_frame.rowconfigure(3,weight=1)
+    info_frame.rowconfigure(4,weight=1)
+    info_frame.rowconfigure(5,weight=1)
+    info_frame.rowconfigure(6,weight=1)
+    info_frame.rowconfigure(7,weight=1)
+
+    #creating the labels and entries
+    name_lbl = Label(info_frame, text="Name", bg='#9399AC', fg='#4D5660', font=("Segoe UI Black", 22))
+    name_lbl.grid(row=0, column=0, sticky="W")
+    name_inp = Entry(info_frame, width=50, bg='#FFFFFF', fg='#4D5660', borderwidth=8, relief="flat", font=("Helvetica", 16))
+    name_inp.grid(row=1, column=0, sticky="W", padx=(2, 50))
+
+    status_lbl = Label(info_frame, text="Status", bg='#9399AC', fg='#4D5660', font=("Segoe UI Black", 22))
+    status_lbl.grid(row=2, column=0, sticky="W")
+    # datatype of dropdown menu
+    clicked = StringVar() 
+    clicked.set("Planned") 
+    # Create Dropdown menu 
+    options = ["Planned", "In Progress", "Completed"] 
+    status_inp = OptionMenu(info_frame, clicked, *options) 
+    status_inp.config(width=50, bg='#FFFFFF', fg='#4D5660', borderwidth=8, relief="flat", font=("Helvetica", 16), anchor="w")
+    status_inp.grid(row=3, column=0, sticky="W", padx=(2, 50))
+
+    medium_lbl = Label(info_frame, text="Medium", bg='#9399AC', fg='#4D5660', font=("Segoe UI Black", 22))
+    medium_lbl.grid(row=4, column=0, sticky="W")
+    medium_inp = Entry(info_frame, width=50, bg='#FFFFFF', fg='#4D5660', borderwidth=8, relief="flat", font=("Helvetica", 16))
+    medium_inp.grid(row=5, column=0, sticky="W", padx=(2, 50))
+
+
+
+    #ORIGINAL ARTWORK
+    if arttype == Original:
+        subject_lbl = Label(info_frame, text="Subject", bg='#9399AC', fg='#4D5660', font=("Segoe UI Black", 22))
+        subject_lbl.grid(row=6, column=0, sticky="W")
+        subject_inp = Entry(info_frame, width=50, bg='#FFFFFF', fg='#4D5660', borderwidth=8, relief="flat", font=("Helvetica", 16))
+        subject_inp.grid(row=7, column=0, sticky="W", padx=(2, 50), pady=(0, 20))
+
+        desc_lbl = Label(info_frame, text="Description", bg='#9399AC', fg='#4D5660', font=("Segoe UI Black", 22))
+        desc_lbl.grid(row=0, column=1, padx=0, pady=0, sticky="W")
+        desc_inp = Entry(info_frame, width=50, bg='#FFFFFF', fg='#4D5660', borderwidth=8, relief="flat", font=("Helvetica", 16))
+        desc_inp.grid(row=1, column=1, sticky="W", padx=(2, 50))
+
+        btn_bg = Frame(info_frame, bg='#FFFFFF', bd=5) 
+        btn_bg.grid(row=2, column=1, sticky="W", pady=0, rowspan=2)
+        
+
+        #fills textboxes with pre-existing info
+        if action == 'edit' or action == 'view':
+            name_inp.insert(0, artwork.name)
+            clicked.set(artwork.status)
+            medium_inp.insert(0, artwork.medium)
+            subject_inp.insert(0, artwork.subject)
+            desc_inp.insert(0, artwork.desc)
+        #makes textboxes uneditable if viewing
+        if action == 'view':
+            name_inp.config(state='disabled')
+            status_inp.config(state='disabled')
+            medium_inp.config(state='disabled')
+            subject_inp.config(state='disabled')
+            desc_inp.config(state='disabled')
+
+
+        #adding various buttons depending on what the user is doing
+        if action == 'create':
+            save_btn = Button(btn_bg, text="Save", bg='#E2CDB4', fg='#FFFFFF', relief='flat', bd=0, font=("Segoe UI Black", 18), command=save_original)
+            save_btn.grid(row=0, column=0, padx=0, pady=0, sticky="W")
+        elif action == 'edit':
+            update_btn = Button(btn_bg, text="Update", bg='#E2CDB4', fg='#FFFFFF', relief='flat', bd=0, font=("Segoe UI Black", 18), command=lambda: update_original(artwork))
+            update_btn.grid(row=0, column=0, padx=0, pady=0, sticky="W")
+        elif action == 'filter':
+            save_btn = Button(btn_bg, text="Go", bg='#E2CDB4', fg='#FFFFFF', relief='flat', bd=0, font=("Segoe UI Black", 18), command=filter_originals)
+            save_btn.grid(row=0, column=0, padx=0, pady=0, sticky="W")
+        
+
+
+    #FANART
+    else:
+        fandom_lbl = Label(info_frame, text="Fandom", bg='#9399AC', fg='#4D5660', font=("Segoe UI Black", 22))
+        fandom_lbl.grid(row=6, column=0, sticky="W")
+        fandom_inp = Entry(info_frame, width=50, bg='#FFFFFF', fg='#4D5660', borderwidth=8, relief="flat", font=("Helvetica", 16))
+        fandom_inp.grid(row=7, column=0, sticky="W", padx=(2, 50), pady=(0, 20))
+
+        character_lbl = Label(info_frame, text="Character", bg='#9399AC', fg='#4D5660', font=("Segoe UI Black", 22))
+        character_lbl.grid(row=0, column=1, padx=0, pady=0, sticky="W")
+        character_inp = Entry(info_frame, width=50, bg='#FFFFFF', fg='#4D5660', borderwidth=8, relief="flat", font=("Helvetica", 16))
+        character_inp.grid(row=1, column=1, sticky="W", padx=(2, 50))
+
+        desc_lbl = Label(info_frame, text="Description", bg='#9399AC', fg='#4D5660', font=("Segoe UI Black", 22))
+        desc_lbl.grid(row=2, column=1, padx=0, pady=0, sticky="W")
+        desc_inp = Entry(info_frame, width=50, bg='#FFFFFF', fg='#4D5660', borderwidth=8, relief="flat", font=("Helvetica", 16))
+        desc_inp.grid(row=3, column=1, sticky="W", padx=(2, 50))
+
+        btn_bg = Frame(info_frame, bg='#FFFFFF', bd=5) 
+        btn_bg.grid(row=4, column=1, sticky="W", pady=0, rowspan=2)
+
+
+        #fills textboxes with pre-existing info
+        if action == 'edit' or action == 'view':
+            name_inp.insert(0, artwork.name)
+            clicked.set(artwork.status)
+            medium_inp.insert(0, artwork.medium)
+            fandom_inp.insert(0, artwork.fandom)
+            character_inp.insert(0, artwork.character)
+            desc_inp.insert(0, artwork.desc)
+        #makes textboxes uneditable if viewing
+        if action == 'view':
+            name_inp.config(state='disabled')
+            status_inp.config(state='disabled')
+            medium_inp.config(state='disabled')
+            fandom_inp.config(state='disabled')
+            character_inp.config(state='disabled')
+            desc_inp.config(state='disabled')
+
+
+        #adding various buttons depending on what the user is doing
+        if action == 'create':
+            save_btn = Button(btn_bg, text="Save", bg='#E2CDB4', fg='#FFFFFF', relief='flat', bd=0, font=("Segoe UI Black", 18), command=save_fanart)
+            save_btn.grid(row=0, column=0, padx=0, pady=0, sticky="W")
+        elif action == 'edit':
+            save_btn = Button(btn_bg, text="Update", bg='#E2CDB4', fg='#FFFFFF', relief='flat', bd=0, font=("Segoe UI Black", 18), command=lambda: update_fanart(artwork))
+            save_btn.grid(row=0, column=0, padx=0, pady=0, sticky="W")
+        elif action == 'filter':
+            filter_btn = Button(btn_bg, text="Go", bg='#E2CDB4', fg='#FFFFFF', relief='flat', bd=0, font=("Segoe UI Black", 18), command=filter_fanarts)
+            filter_btn.grid(row=0, column=0, padx=0, pady=0, sticky="W")
+
+
+
 
 
 # #creating the forward and back functions
@@ -502,12 +538,14 @@ def delete_artwork(artwork):
 
     def no_press():
         delete_dialog.destroy()
-        
+    
+    #text on the delete window
     info_lbl_1 = Label(delete_dialog, text="Delete this artwork?", bg='#4D5660', fg='#FFFFFF', font=("Segoe UI Black", 18))
     info_lbl_1.grid(row=0, column=0, padx=25, pady=(20, 0), columnspan=2, sticky="W")
     info_lbl_2 = Label(delete_dialog, text="This action cannot be undone.", bg='#4D5660', fg='#FFFFFF', font=("Segoe UI Black", 18))
     info_lbl_2.grid(row=1, column=0, padx=25, pady=0, columnspan=2, sticky="W")
 
+    #buttons on the delete window
     yes_btn = Button(delete_dialog, text="Yes", bg='#9399AC', fg='#FFFFFF', bd=0, command=lambda: yes_press(artwork), font=("Segoe UI Black", 18))
     yes_btn.grid(row=2, column=0, padx=25, pady=25, sticky="NESW")
     no_btn = Button(delete_dialog, text="No", bg='#9399AC', fg='#FFFFFF', bd=0, command=no_press, font=("Segoe UI Black", 18))
@@ -516,33 +554,34 @@ def delete_artwork(artwork):
 
 
 
-
+#creating the delete icons
 delete_img = ImageTk.PhotoImage(Image.open("ArtTracker/resources/delete_icon.png"))
 
-delete_1 = Button(item_frame_1, bd=0, text="Delete", image=delete_img, bg='#9399AC', command=lambda: delete_artwork(artworks_by_page[page_num - 1][0]))
+delete_1 = Button(item_frame_1, bd=0, text="Delete", image=delete_img, bg='#9399AC', command=lambda: delete_artwork((create_buttons_list(all_artworks))[1][page_num - 1][0]))
 delete_1.pack(side=RIGHT)
-delete_2 = Button(item_frame_2, bd=0, text="Delete", image=delete_img, bg='#9399AC', command=lambda: delete_artwork(artworks_by_page[page_num - 1][1]))
+delete_2 = Button(item_frame_2, bd=0, text="Delete", image=delete_img, bg='#9399AC', command=lambda: delete_artwork((create_buttons_list(all_artworks))[1][page_num - 1][1]))
 delete_2.pack(side=RIGHT)
-delete_3 = Button(item_frame_3, bd=0, text="Delete", image=delete_img, bg='#9399AC', command=lambda: delete_artwork(artworks_by_page[page_num - 1][2]))
+delete_3 = Button(item_frame_3, bd=0, text="Delete", image=delete_img, bg='#9399AC', command=lambda: delete_artwork((create_buttons_list(all_artworks))[1][page_num - 1][2]))
 delete_3.pack(side=RIGHT)
-delete_4 = Button(item_frame_4, bd=0, text="Delete", image=delete_img, bg='#9399AC', command=lambda: delete_artwork(artworks_by_page[page_num - 1][3]))
+delete_4 = Button(item_frame_4, bd=0, text="Delete", image=delete_img, bg='#9399AC', command=lambda: delete_artwork((create_buttons_list(all_artworks))[1][page_num - 1][3]))
 delete_4.pack(side=RIGHT)
-delete_5 = Button(item_frame_5, bd=0, text="Delete", image=delete_img, bg='#9399AC', command=lambda: delete_artwork(artworks_by_page[page_num - 1][4]))
+delete_5 = Button(item_frame_5, bd=0, text="Delete", image=delete_img, bg='#9399AC', command=lambda: delete_artwork((create_buttons_list(all_artworks))[1][page_num - 1][4]))
 delete_5.pack(side=RIGHT)
 
 
 edit_img = ImageTk.PhotoImage(Image.open("ArtTracker/resources/edit_icon.png"))
 
-#MUST SWAP OUT PARAMETERS FOR ACTUAL ARTWORK ID AND TYPE
-edit_1 = Button(item_frame_1, bd=0, text="Edit", image=edit_img, bg='#9399AC', command=lambda: artwork_info_window('original', 'edit', artworks_by_page[page_num - 1][0]))
+
+
+edit_1 = Button(item_frame_1, bd=0, text="Edit", image=edit_img, bg='#9399AC', command=lambda: artwork_info_window('original', 'edit', (create_buttons_list(all_artworks))[1][page_num - 1][0]))
 edit_1.pack(side=RIGHT, padx=10)
-edit_2 = Button(item_frame_2, bd=0, text="Edit", image=edit_img, bg='#9399AC', command=lambda: artwork_info_window('original', 'edit', artworks_by_page[page_num - 1][1]))
+edit_2 = Button(item_frame_2, bd=0, text="Edit", image=edit_img, bg='#9399AC', command=lambda: artwork_info_window('original', 'edit', (create_buttons_list(all_artworks))[1][page_num - 1][1]))
 edit_2.pack(side=RIGHT, padx=10)
-edit_3 = Button(item_frame_3, bd=0, text="Edit", image=edit_img, bg='#9399AC', command=lambda: artwork_info_window('original', 'edit', artworks_by_page[page_num - 1][2]))
+edit_3 = Button(item_frame_3, bd=0, text="Edit", image=edit_img, bg='#9399AC', command=lambda: artwork_info_window('original', 'edit', (create_buttons_list(all_artworks))[1][page_num - 1][2]))
 edit_3.pack(side=RIGHT, padx=10)
-edit_4 = Button(item_frame_4, bd=0, text="Edit", image=edit_img, bg='#9399AC', command=lambda: artwork_info_window('original', 'edit', artworks_by_page[page_num - 1][3]))
+edit_4 = Button(item_frame_4, bd=0, text="Edit", image=edit_img, bg='#9399AC', command=lambda: artwork_info_window('original', 'edit', (create_buttons_list(all_artworks))[1][page_num - 1][3]))
 edit_4.pack(side=RIGHT, padx=10)
-edit_5 = Button(item_frame_5, bd=0, text="Edit", image=edit_img, bg='#9399AC', command=lambda: artwork_info_window('original', 'edit', artworks_by_page[page_num - 1][4]))
+edit_5 = Button(item_frame_5, bd=0, text="Edit", image=edit_img, bg='#9399AC', command=lambda: artwork_info_window('original', 'edit', (create_buttons_list(all_artworks))[1][page_num - 1][4]))
 edit_5.pack(side=RIGHT, padx=10)
 
 

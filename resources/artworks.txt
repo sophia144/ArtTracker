@@ -1,7 +1,8 @@
-fanart, Mind over matter, Jayce's evolution in Arcane, In progress, Pencil, None, Arcane, Jayce Talis, 2024-11-25
-fanart, Curious, Digital painting of Miles Morales with black background, Completed, Digital, None, Spiderverse, Miles Morales, 2023-01-27
-fanart, Dragon fever, Oil painting of Bilbo looking down into the dragon's hoard, In Progress, Oil, None, The Hobbit, Bilbo Baggins, 2025-01-13
+fanart, Curious, Digital painting of Miles Morales with black background, In Progress, Digital, None, Spiderverse, Miles Morales, 2023-01-27
+fanart, Former lives, Study of past lives screenshot, In Progress, Digital, None, Puss in boots, Puss in boots, 2025-01-13
+fanart, Not so fireproof, Sketch of toothless in the style of Hiccup's sketchbook, In Progress, Watercolour, None, How to train your dragon, Toothless, 2025-01-13
 original, Moonlight, A masked character in front of mountains, Completed, Digital, Masked character, None, None, 2023-06-21
 original, Seafoam, Painting of a beach with a palm tree, Completed, Digital, Beach, None, None, 2022-12-13
 original, Clouds, Painting of clouds, In Progress, Acrylic, Clouds, None, None, 2025-01-1
-original, Leaves in the wind, An oil painting of a tree losing its leaves in the autumn, Completed, Oil, Tree, None, None, 2025-01-
+original, Leaves in the wind, An oil painting of a tree losing its leaves in the autumn, Completed, Oil, Tree, None, None, 2025-01
+original, Deserted, Painting of boat, Planned, Oil, Boat, None, None, 2025
