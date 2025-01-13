@@ -497,6 +497,7 @@ def delete_artwork(artwork):
             original_list.remove(artwork)
         else:
             fanart_list.remove(artwork)
+        update_variables()
         delete_dialog.destroy()
 
     def no_press():
@@ -507,10 +508,10 @@ def delete_artwork(artwork):
     info_lbl_2 = Label(delete_dialog, text="This action cannot be undone.", bg='#4D5660', fg='#FFFFFF', font=("Segoe UI Black", 18))
     info_lbl_2.grid(row=1, column=0, padx=25, pady=0, columnspan=2, sticky="W")
 
-    original_btn = Button(delete_dialog, text="Yes", bg='#9399AC', fg='#FFFFFF', bd=0, command=yes_press, font=("Segoe UI Black", 18))
-    original_btn.grid(row=2, column=0, padx=25, pady=25, sticky="NESW")
-    fanart_btn = Button(delete_dialog, text="No", bg='#9399AC', fg='#FFFFFF', bd=0, command=no_press, font=("Segoe UI Black", 18))
-    fanart_btn.grid(row=2, column=1, padx=25, pady=25, sticky="NESW")
+    yes_btn = Button(delete_dialog, text="Yes", bg='#9399AC', fg='#FFFFFF', bd=0, command=lambda: yes_press(artwork), font=("Segoe UI Black", 18))
+    yes_btn.grid(row=2, column=0, padx=25, pady=25, sticky="NESW")
+    no_btn = Button(delete_dialog, text="No", bg='#9399AC', fg='#FFFFFF', bd=0, command=no_press, font=("Segoe UI Black", 18))
+    no_btn.grid(row=2, column=1, padx=25, pady=25, sticky="NESW")
 
 
 
