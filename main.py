@@ -85,7 +85,6 @@ def write_csv(fanart_list, original_list):
 
 
 
-
 #creating the tkinter window
 root = Tk()
 root.title("Art Tracker")
@@ -105,6 +104,11 @@ root.rowconfigure(2, weight=1)
 photo = ImageTk.PhotoImage(Image.open("ArtTracker/resources/painticon.ico"))
 root.wm_iconphoto(False, photo)
 #https://www.flaticon.com/free-icon/paint-brush_587377
+
+
+#setting up list of artworks
+fanart_list, original_list = read_csv()
+all_artworks = fanart_list + original_list
 
 
 #save database functions
@@ -135,11 +139,8 @@ def filter_fanarts(d):
     return
 
 
-
-
-
 #artwork info window
-def artwork_info_window(arttype, action, artwork_id=None):
+def artwork_info_window(arttype, action, artwork=None):
     global creation_window
     creation_window = Toplevel(root)
     creation_window.title("Create Artwork")
@@ -180,7 +181,13 @@ def artwork_info_window(arttype, action, artwork_id=None):
 
     status_lbl = Label(info_frame, text="Status", bg='#9399AC', fg='#4D5660', font=("Segoe UI Black", 22))
     status_lbl.grid(row=2, column=0, sticky="W")
-    status_inp = Entry(info_frame, width=50, bg='#FFFFFF', fg='#4D5660', borderwidth=8, relief="flat", font=("Helvetica", 16))
+    # datatype of dropdown menu
+    clicked = StringVar() 
+    clicked.set("Planned") 
+    # Create Dropdown menu 
+    options = ["Planned", "In Progress", "Completed"] 
+    status_inp = OptionMenu(info_frame, clicked , *options) 
+    status_inp.config(width=50, bg='#FFFFFF', fg='#4D5660', borderwidth=8, relief="flat", font=("Helvetica", 16), anchor="w")
     status_inp.grid(row=3, column=0, sticky="W", padx=(2, 50))
 
     medium_lbl = Label(info_frame, text="Medium", bg='#9399AC', fg='#4D5660', font=("Segoe UI Black", 22))
@@ -188,8 +195,10 @@ def artwork_info_window(arttype, action, artwork_id=None):
     medium_inp = Entry(info_frame, width=50, bg='#FFFFFF', fg='#4D5660', borderwidth=8, relief="flat", font=("Helvetica", 16))
     medium_inp.grid(row=5, column=0, sticky="W", padx=(2, 50))
 
+
+
     #ORIGINAL ARTWORK
-    if arttype == 'original':
+    if arttype == Original:
         subject_lbl = Label(info_frame, text="Subject", bg='#9399AC', fg='#4D5660', font=("Segoe UI Black", 22))
         subject_lbl.grid(row=6, column=0, sticky="W")
         subject_inp = Entry(info_frame, width=50, bg='#FFFFFF', fg='#4D5660', borderwidth=8, relief="flat", font=("Helvetica", 16))
@@ -202,7 +211,25 @@ def artwork_info_window(arttype, action, artwork_id=None):
 
         btn_bg = Frame(info_frame, bg='#FFFFFF', bd=5) 
         btn_bg.grid(row=2, column=1, sticky="W", pady=0, rowspan=2)
+        
 
+        #fills textboxes with pre-existing info
+        if action == 'edit' or action == 'view':
+            name_inp.insert(0, artwork.name)
+            #status_inp.insert(0, artwork.status)
+            medium_inp.insert(0, artwork.medium)
+            subject_inp.insert(0, artwork.subject)
+            desc_inp.insert(0, artwork.desc)
+        #makes textboxes uneditable if viewing
+        if action == 'view':
+            name_inp.config(state='disabled')
+            status_inp.config(state='disabled')
+            medium_inp.config(state='disabled')
+            subject_inp.config(state='disabled')
+            desc_inp.config(state='disabled')
+
+
+        #adding various buttons depending on what the user is doing
         if action == 'create':
             save_btn = Button(btn_bg, text="Save", bg='#E2CDB4', fg='#FFFFFF', relief='flat', bd=0, font=("Segoe UI Black", 18), command=save_original)
             save_btn.grid(row=0, column=0, padx=0, pady=0, sticky="W")
@@ -212,7 +239,7 @@ def artwork_info_window(arttype, action, artwork_id=None):
         elif action == 'filter':
             save_btn = Button(btn_bg, text="Go", bg='#E2CDB4', fg='#FFFFFF', relief='flat', bd=0, font=("Segoe UI Black", 18), command=filter_originals)
             save_btn.grid(row=0, column=0, padx=0, pady=0, sticky="W")
-
+        
 
 
     #FANART
@@ -235,6 +262,26 @@ def artwork_info_window(arttype, action, artwork_id=None):
         btn_bg = Frame(info_frame, bg='#FFFFFF', bd=5) 
         btn_bg.grid(row=4, column=1, sticky="W", pady=0, rowspan=2)
 
+
+        #fills textboxes with pre-existing info
+        if action == 'edit' or action == 'view':
+            name_inp.insert(0, artwork.name)
+            #status_inp.insert(0, artwork.status)
+            medium_inp.insert(0, artwork.medium)
+            fandom_inp.insert(0, artwork.fandom)
+            character_inp.insert(0, artwork.character)
+            desc_inp.insert(0, artwork.desc)
+        #makes textboxes uneditable if viewing
+        if action == 'view':
+            name_inp.config(state='disabled')
+            status_inp.config(state='disabled')
+            medium_inp.config(state='disabled')
+            fandom_inp.config(state='disabled')
+            character_inp.config(state='disabled')
+            desc_inp.config(state='disabled')
+
+
+        #adding various buttons depending on what the user is doing
         if action == 'create':
             save_btn = Button(btn_bg, text="Save", bg='#E2CDB4', fg='#FFFFFF', relief='flat', bd=0, font=("Segoe UI Black", 18), command=save_fanart)
             save_btn.grid(row=0, column=0, padx=0, pady=0, sticky="W")
@@ -249,10 +296,20 @@ def artwork_info_window(arttype, action, artwork_id=None):
 
 
 
-
 #formatting the artworks window
 bg_frame = LabelFrame(root, padx=0, pady=30, bg='#7B8292', bd=0)
 bg_frame.grid(row=0, column=0, padx=50, pady=50, sticky="NESW", rowspan=3)
+
+bg_frame.columnconfigure(0,weight=1)
+bg_frame.columnconfigure(1,weight=6)
+bg_frame.columnconfigure(2,weight=1)
+
+bg_frame.rowconfigure(0,weight=1) 
+bg_frame.rowconfigure(1,weight=1) 
+bg_frame.rowconfigure(2,weight=1) 
+bg_frame.rowconfigure(3,weight=1) 
+bg_frame.rowconfigure(4,weight=1) 
+
 
 #creating the item frames
 item_frame_1 = LabelFrame(bg_frame, padx=10, pady=10, bg='#4D5660', bd=0)
@@ -265,16 +322,6 @@ item_frame_4 = LabelFrame(bg_frame, padx=10, pady=10, bg='#4D5660', bd=0)
 item_frame_4.grid(row=3, column=1, sticky="NESW", padx=10, pady=10)
 item_frame_5 = LabelFrame(bg_frame, padx=10, pady=10, bg='#4D5660', bd=0)
 item_frame_5.grid(row=4, column=1, sticky="NESW", padx=10, pady=10)
-
-bg_frame.columnconfigure(0,weight=1)
-bg_frame.columnconfigure(1,weight=6)
-bg_frame.columnconfigure(2,weight=1)
-
-bg_frame.rowconfigure(0,weight=1) 
-bg_frame.rowconfigure(1,weight=1) 
-bg_frame.rowconfigure(2,weight=1) 
-bg_frame.rowconfigure(3,weight=1) 
-bg_frame.rowconfigure(4,weight=1) 
 
 forward_img = ImageTk.PhotoImage(Image.open("ArtTracker/resources/forward_icon.png"))
 back_img = ImageTk.PhotoImage(Image.open("ArtTracker/resources/back_icon.png"))
@@ -292,16 +339,59 @@ item_frame_4.rowconfigure(0,weight=1)
 item_frame_5.rowconfigure(0,weight=1) 
 
 
-placeholder_1 = Button(item_frame_1, text="Placeholder", fg='white', bg='#4D5660', relief='flat', font=("Segoe UI Black", 18), command=lambda: artwork_info_window('original', 'view', 'placeholder'))
-placeholder_1.pack(side=LEFT)
-placeholder_2 = Button(item_frame_2, text="Placeholder", fg='white', bg='#4D5660', relief='flat', font=("Segoe UI Black", 18), command=lambda: artwork_info_window('original', 'view', 'placeholder'))
-placeholder_2.pack(side=LEFT)
-placeholder_3 = Button(item_frame_3, text="Placeholder", fg='white', bg='#4D5660', relief='flat', font=("Segoe UI Black", 18), command=lambda: artwork_info_window('original', 'view', 'placeholder'))
-placeholder_3.pack(side=LEFT)
-placeholder_4 = Button(item_frame_4, text="Placeholder", fg='white', bg='#4D5660', relief='flat', font=("Segoe UI Black", 18), command=lambda: artwork_info_window('original', 'view', 'placeholder'))
-placeholder_4.pack(side=LEFT)
-placeholder_5 = Button(item_frame_5, text="Placeholder", fg='white', bg='#4D5660', relief='flat', font=("Segoe UI Black", 18), command=lambda: artwork_info_window('original', 'view', 'placeholder'))
-placeholder_5.pack(side=LEFT)
+#calculating the number of pages
+num_pages = len(all_artworks) // 5
+page_num = 1
+
+#creating a list to store a button for each artwork in the list
+artwork_buttons = []
+
+#creating a button for each artwork in the list
+artworks_by_page = []
+for i in range(0, len(all_artworks), 5):
+    artworks_by_page += [all_artworks[i:i + 5]]
+
+
+for page in artworks_by_page:
+    artwork_buttons.append(Button(item_frame_1, text=page[0].name, fg='white', bg='#4D5660', relief='flat', font=("Segoe UI Black", 18), command=lambda: artwork_info_window(type(page[0]), 'view', page[0])))
+    
+    #in case there is only one button in the last group
+    try:
+        artwork_buttons.append(Button(item_frame_2, text=page[1].name, fg='white', bg='#4D5660', relief='flat', font=("Segoe UI Black", 18), command=lambda: artwork_info_window(type(page[1]), 'view', page[1])))
+    except:
+        pass
+
+    try:
+        artwork_buttons.append(Button(item_frame_3, text=page[2].name, fg='white', bg='#4D5660', relief='flat', font=("Segoe UI Black", 18), command=lambda: artwork_info_window(type(page[2]), 'view', page[2])))
+    except:
+        pass
+
+    try:
+        artwork_buttons.append(Button(item_frame_4, text=page[3].name, fg='white', bg='#4D5660', relief='flat', font=("Segoe UI Black", 18), command=lambda: artwork_info_window(type(page[3]), 'view', page[3])))
+    except:
+        pass
+
+    try:
+        artwork_buttons.append(Button(item_frame_5, text=page[4].name, fg='white', bg='#4D5660', relief='flat', font=("Segoe UI Black", 18), command=lambda: artwork_info_window(type(page[4]), 'view', page[4])))
+    except:
+        pass
+
+
+
+artwork_button_1 = artwork_buttons[0]
+artwork_button_1.pack(side=LEFT)
+artwork_button_2 = artwork_buttons[1]
+artwork_button_2.pack(side=LEFT)
+artwork_button_3 = artwork_buttons[2]
+artwork_button_3.pack(side=LEFT)
+artwork_button_4 = artwork_buttons[3]
+artwork_button_4.pack(side=LEFT)
+artwork_button_5 = artwork_buttons[4]
+artwork_button_5.pack(side=LEFT)
+
+
+
+
 
 
 #delete functionality
