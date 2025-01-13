@@ -110,38 +110,69 @@ root.wm_iconphoto(False, photo)
 fanart_list, original_list = read_csv()
 all_artworks = fanart_list + original_list
 
+def update_variables():
+    global all_artworks
+    write_csv(fanart_list, original_list)
+    all_artworks = fanart_list + original_list
 
-#save database functions
+#save artowrk functions
 def save_original():
+    name = name_inp.get()
+    desc = desc_inp.get()
+    status = clicked.get()
+    medium = medium_inp.get()
+    subject = subject_inp.get()
+
+    new_original = Original(name, desc, status, medium, subject)
+    original_list.append(new_original)
+    update_variables()
     creation_window.destroy()
-    return
+
 
 def save_fanart():
+    name = name_inp.get()
+    desc = desc_inp.get()
+    status = clicked.get()
+    medium = medium_inp.get()
+    fandom = fandom_inp.get()
+    character = character_inp.get()
+
+    new_fanart = Fanart(name, desc, status, medium, fandom, character)
+    fanart_list.append(new_fanart)
+    update_variables()
     creation_window.destroy()
-    return
+
 
 #update database functions
-def update_original(artwork_id):
+def update_original(artwork):
     creation_window.destroy()
-    return
 
-def update_fanart(artwork_id):
+
+def update_fanart(artwork):
     creation_window.destroy()
-    return
+
 
 #filter database functions
 def filter_originals():
     creation_window.destroy()
-    return
 
-def filter_fanarts(d):
+
+def filter_fanarts():
     creation_window.destroy()
-    return
+
 
 
 #artwork info window
 def artwork_info_window(arttype, action, artwork=None):
     global creation_window
+    global name_inp
+    global clicked
+    global medium_inp
+    global subject_inp
+    global desc_inp
+    global fandom_inp
+    global character_inp
+
     creation_window = Toplevel(root)
     creation_window.title("Create Artwork")
     creation_window.geometry("1000x625")
@@ -186,7 +217,7 @@ def artwork_info_window(arttype, action, artwork=None):
     clicked.set("Planned") 
     # Create Dropdown menu 
     options = ["Planned", "In Progress", "Completed"] 
-    status_inp = OptionMenu(info_frame, clicked , *options) 
+    status_inp = OptionMenu(info_frame, clicked, *options) 
     status_inp.config(width=50, bg='#FFFFFF', fg='#4D5660', borderwidth=8, relief="flat", font=("Helvetica", 16), anchor="w")
     status_inp.grid(row=3, column=0, sticky="W", padx=(2, 50))
 
@@ -286,7 +317,7 @@ def artwork_info_window(arttype, action, artwork=None):
             save_btn = Button(btn_bg, text="Save", bg='#E2CDB4', fg='#FFFFFF', relief='flat', bd=0, font=("Segoe UI Black", 18), command=save_fanart)
             save_btn.grid(row=0, column=0, padx=0, pady=0, sticky="W")
         elif action == 'edit':
-            save_btn = Button(btn_bg, text="Update", bg='#E2CDB4', fg='#FFFFFF', relief='flat', bd=0, font=("Segoe UI Black", 18), command=lambda: update_fanart('placeholder'))
+            save_btn = Button(btn_bg, text="Update", bg='#E2CDB4', fg='#FFFFFF', relief='flat', bd=0, font=("Segoe UI Black", 18), command=lambda: update_fanart(artwork))
             save_btn.grid(row=0, column=0, padx=0, pady=0, sticky="W")
         elif action == 'filter':
             filter_btn = Button(btn_bg, text="Go", bg='#E2CDB4', fg='#FFFFFF', relief='flat', bd=0, font=("Segoe UI Black", 18), command=filter_fanarts)
@@ -310,6 +341,7 @@ bg_frame.rowconfigure(2,weight=1)
 bg_frame.rowconfigure(3,weight=1) 
 bg_frame.rowconfigure(4,weight=1) 
 
+page_num = 1
 
 #creating the item frames
 item_frame_1 = LabelFrame(bg_frame, padx=10, pady=10, bg='#4D5660', bd=0)
@@ -339,63 +371,113 @@ item_frame_4.rowconfigure(0,weight=1)
 item_frame_5.rowconfigure(0,weight=1) 
 
 
-#calculating the number of pages
-num_pages = len(all_artworks) // 5
-page_num = 1
+def create_buttons_list(all_artworks):
+    #calculating the number of pages
+    num_pages = len(all_artworks) // 5
+    artwork_buttons = []
 
-#creating a list to store a button for each artwork in the list
-artwork_buttons = []
-
-#creating a button for each artwork in the list
-artworks_by_page = []
-for i in range(0, len(all_artworks), 5):
-    artworks_by_page += [all_artworks[i:i + 5]]
+    #creating a button for each artwork in the list
+    artworks_by_page = []
+    for i in range(0, len(all_artworks), 5):
+        artworks_by_page += [all_artworks[i:i + 5]]
 
 
-for page in artworks_by_page:
-    artwork_buttons.append(Button(item_frame_1, text=page[0].name, fg='white', bg='#4D5660', relief='flat', font=("Segoe UI Black", 18), command=lambda: artwork_info_window(type(page[0]), 'view', page[0])))
+    for page in artworks_by_page:
+        artwork_buttons.append(Button(item_frame_1, text=page[0].name, fg='white', bg='#4D5660', relief='flat', font=("Segoe UI Black", 18), command=lambda: artwork_info_window(type(page[0]), 'view', page[0])))
+        
+        #in case there is only one button in the last group
+        try:
+            artwork_buttons.append(Button(item_frame_2, text=page[1].name, fg='white', bg='#4D5660', relief='flat', font=("Segoe UI Black", 18), command=lambda: artwork_info_window(type(page[1]), 'view', page[1])))
+        except:
+            pass
+
+        try:
+            artwork_buttons.append(Button(item_frame_3, text=page[2].name, fg='white', bg='#4D5660', relief='flat', font=("Segoe UI Black", 18), command=lambda: artwork_info_window(type(page[2]), 'view', page[2])))
+        except:
+            pass
+
+        try:
+            artwork_buttons.append(Button(item_frame_4, text=page[3].name, fg='white', bg='#4D5660', relief='flat', font=("Segoe UI Black", 18), command=lambda: artwork_info_window(type(page[3]), 'view', page[3])))
+        except:
+            pass
+
+        try:
+            artwork_buttons.append(Button(item_frame_5, text=page[4].name, fg='white', bg='#4D5660', relief='flat', font=("Segoe UI Black", 18), command=lambda: artwork_info_window(type(page[4]), 'view', page[4])))
+        except:
+            pass
     
-    #in case there is only one button in the last group
-    try:
-        artwork_buttons.append(Button(item_frame_2, text=page[1].name, fg='white', bg='#4D5660', relief='flat', font=("Segoe UI Black", 18), command=lambda: artwork_info_window(type(page[1]), 'view', page[1])))
-    except:
-        pass
-
-    try:
-        artwork_buttons.append(Button(item_frame_3, text=page[2].name, fg='white', bg='#4D5660', relief='flat', font=("Segoe UI Black", 18), command=lambda: artwork_info_window(type(page[2]), 'view', page[2])))
-    except:
-        pass
-
-    try:
-        artwork_buttons.append(Button(item_frame_4, text=page[3].name, fg='white', bg='#4D5660', relief='flat', font=("Segoe UI Black", 18), command=lambda: artwork_info_window(type(page[3]), 'view', page[3])))
-    except:
-        pass
-
-    try:
-        artwork_buttons.append(Button(item_frame_5, text=page[4].name, fg='white', bg='#4D5660', relief='flat', font=("Segoe UI Black", 18), command=lambda: artwork_info_window(type(page[4]), 'view', page[4])))
-    except:
-        pass
+    return artwork_buttons, artworks_by_page
 
 
+artwork_buttons, artworks_by_page = create_buttons_list(all_artworks)
 
-artwork_button_1 = artwork_buttons[0]
-artwork_button_1.pack(side=LEFT)
-artwork_button_2 = artwork_buttons[1]
-artwork_button_2.pack(side=LEFT)
-artwork_button_3 = artwork_buttons[2]
-artwork_button_3.pack(side=LEFT)
-artwork_button_4 = artwork_buttons[3]
-artwork_button_4.pack(side=LEFT)
-artwork_button_5 = artwork_buttons[4]
-artwork_button_5.pack(side=LEFT)
+try:
+    artwork_button_1 = artwork_buttons[0]
+    artwork_button_1.pack(side=LEFT)
+except: 
+    item_frame_1.destroy()
+
+try:
+    artwork_button_2 = artwork_buttons[1]
+    artwork_button_2.pack(side=LEFT)
+except: 
+    item_frame_2.destroy()
+
+try:
+    artwork_button_3 = artwork_buttons[2]
+    artwork_button_3.pack(side=LEFT)
+except:
+    item_frame_3.destroy()
+
+try:
+    artwork_button_4 = artwork_buttons[3]
+    artwork_button_4.pack(side=LEFT)
+except:
+    item_frame_4.destroy()
+
+try:
+    artwork_button_5 = artwork_buttons[4]
+    artwork_button_5.pack(side=LEFT)
+except:
+    item_frame_5.destroy()
 
 
+# #creating the forward and back functions
+# def forward(page_num):
+#     artwork_button_1.grid_forget()
+#     artwork_button_2.grid_forget()
+#     artwork_button_3.grid_forget()
+#     artwork_button_4.grid_forget()
+#     artwork_button_5.grid_forget()
 
+#     artwork_button_1 = artwork_buttons[(page_num*5) - 5]
+#     artwork_button_1.pack(side=LEFT)
+#     artwork_button_2 = artwork_buttons[(page_num*5) - 4]
+#     artwork_button_2.pack(side=LEFT)
+#     artwork_button_3 = artwork_buttons[(page_num*5) - 3]
+#     artwork_button_3.pack(side=LEFT)
+#     artwork_button_4 = artwork_buttons[(page_num*5) - 2]
+#     artwork_button_4.pack(side=LEFT)
+#     artwork_button_5 = artwork_buttons[(page_num*5) - 1]
+#     artwork_button_5.pack(side=LEFT)
+
+#     button_forward = Button(root, text=">>", command=lambda: forward(label_num + 1))
+#     button_back = Button(root, text="<<", command=lambda: back(label_num - 1))
+
+#     if label_num == 5:
+#         button_forward = Button(root, text=">>", state=DISABLED)
+
+#     base_label.grid(row=0, column=0, columnspan=3)
+#     button_back.grid(row=1, column=0)
+#     button_forward.grid(row=1, column=2)  
+
+#     status = Label(root, text=f"Image {str(label_num)} of " + str(len(label_list)), bd=1, relief=SUNKEN, anchor=E)
+#     status.grid(row=2, column=0, columnspan=3, sticky=W+E) 
 
 
 
 #delete functionality
-def delete_artwork(artwork_id):
+def delete_artwork(artwork):
     delete_dialog = Toplevel(root)
     delete_dialog.title("Delete artwork")
     delete_dialog.geometry("400x200")
@@ -409,8 +491,12 @@ def delete_artwork(artwork_id):
     delete_dialog.columnconfigure(0, weight=1) 
     delete_dialog.columnconfigure(1, weight=1) 
 
-    def yes_press():
-        #placeholder for delete function
+    #deletes the artwork record
+    def yes_press(artwork):
+        if type(artwork) == Original:
+            original_list.remove(artwork)
+        else:
+            fanart_list.remove(artwork)
         delete_dialog.destroy()
 
     def no_press():
@@ -432,30 +518,30 @@ def delete_artwork(artwork_id):
 
 delete_img = ImageTk.PhotoImage(Image.open("ArtTracker/resources/delete_icon.png"))
 
-delete_1 = Button(item_frame_1, bd=0, text="Delete", image=delete_img, bg='#9399AC', command=lambda: delete_artwork('ID Placeholder'))
+delete_1 = Button(item_frame_1, bd=0, text="Delete", image=delete_img, bg='#9399AC', command=lambda: delete_artwork(artworks_by_page[page_num - 1][0]))
 delete_1.pack(side=RIGHT)
-delete_2 = Button(item_frame_2, bd=0, text="Delete", image=delete_img, bg='#9399AC', command=lambda: delete_artwork('ID Placeholder'))
+delete_2 = Button(item_frame_2, bd=0, text="Delete", image=delete_img, bg='#9399AC', command=lambda: delete_artwork(artworks_by_page[page_num - 1][1]))
 delete_2.pack(side=RIGHT)
-delete_3 = Button(item_frame_3, bd=0, text="Delete", image=delete_img, bg='#9399AC', command=lambda: delete_artwork('ID Placeholder'))
+delete_3 = Button(item_frame_3, bd=0, text="Delete", image=delete_img, bg='#9399AC', command=lambda: delete_artwork(artworks_by_page[page_num - 1][2]))
 delete_3.pack(side=RIGHT)
-delete_4 = Button(item_frame_4, bd=0, text="Delete", image=delete_img, bg='#9399AC', command=lambda: delete_artwork('ID Placeholder'))
+delete_4 = Button(item_frame_4, bd=0, text="Delete", image=delete_img, bg='#9399AC', command=lambda: delete_artwork(artworks_by_page[page_num - 1][3]))
 delete_4.pack(side=RIGHT)
-delete_5 = Button(item_frame_5, bd=0, text="Delete", image=delete_img, bg='#9399AC', command=lambda: delete_artwork('ID Placeholder'))
+delete_5 = Button(item_frame_5, bd=0, text="Delete", image=delete_img, bg='#9399AC', command=lambda: delete_artwork(artworks_by_page[page_num - 1][4]))
 delete_5.pack(side=RIGHT)
 
 
 edit_img = ImageTk.PhotoImage(Image.open("ArtTracker/resources/edit_icon.png"))
 
 #MUST SWAP OUT PARAMETERS FOR ACTUAL ARTWORK ID AND TYPE
-edit_1 = Button(item_frame_1, bd=0, text="Edit", image=edit_img, bg='#9399AC', command=lambda: artwork_info_window('original', 'edit', 'placeholder'))
+edit_1 = Button(item_frame_1, bd=0, text="Edit", image=edit_img, bg='#9399AC', command=lambda: artwork_info_window('original', 'edit', artworks_by_page[page_num - 1][0]))
 edit_1.pack(side=RIGHT, padx=10)
-edit_2 = Button(item_frame_2, bd=0, text="Edit", image=edit_img, bg='#9399AC', command=lambda: artwork_info_window('original', 'edit', 'placeholder'))
+edit_2 = Button(item_frame_2, bd=0, text="Edit", image=edit_img, bg='#9399AC', command=lambda: artwork_info_window('original', 'edit', artworks_by_page[page_num - 1][1]))
 edit_2.pack(side=RIGHT, padx=10)
-edit_3 = Button(item_frame_3, bd=0, text="Edit", image=edit_img, bg='#9399AC', command=lambda: artwork_info_window('original', 'edit', 'placeholder'))
+edit_3 = Button(item_frame_3, bd=0, text="Edit", image=edit_img, bg='#9399AC', command=lambda: artwork_info_window('original', 'edit', artworks_by_page[page_num - 1][2]))
 edit_3.pack(side=RIGHT, padx=10)
-edit_4 = Button(item_frame_4, bd=0, text="Edit", image=edit_img, bg='#9399AC', command=lambda: artwork_info_window('original', 'edit', 'placeholder'))
+edit_4 = Button(item_frame_4, bd=0, text="Edit", image=edit_img, bg='#9399AC', command=lambda: artwork_info_window('original', 'edit', artworks_by_page[page_num - 1][3]))
 edit_4.pack(side=RIGHT, padx=10)
-edit_5 = Button(item_frame_5, bd=0, text="Edit", image=edit_img, bg='#9399AC', command=lambda: artwork_info_window('original', 'edit', 'placeholder'))
+edit_5 = Button(item_frame_5, bd=0, text="Edit", image=edit_img, bg='#9399AC', command=lambda: artwork_info_window('original', 'edit', artworks_by_page[page_num - 1][4]))
 edit_5.pack(side=RIGHT, padx=10)
 
 
@@ -478,18 +564,18 @@ def choose_arttype(action):
     if action == 'create':
         def original_press():
             arttype_dialog.destroy()
-            artwork_info_window('original', 'create')
+            artwork_info_window(Original, 'create')
         def fanart_press():
             arttype_dialog.destroy()
-            artwork_info_window('fanart', 'create')
+            artwork_info_window(Fanart, 'create')
         
     if action == 'filter':
         def original_press():
             arttype_dialog.destroy()
-            artwork_info_window('original', 'filter')
+            artwork_info_window(Original, 'filter')
         def fanart_press():
             arttype_dialog.destroy()
-            artwork_info_window('fanart', 'filter')
+            artwork_info_window(Fanart, 'filter')
 
     original_btn = Button(arttype_dialog, text="Original", bg='#4D5660', fg='#FFFFFF', bd=0, command=original_press, font=("Segoe UI Black", 18))
     original_btn.grid(row=0, column=0, padx=10, pady=10, sticky="NESW")
