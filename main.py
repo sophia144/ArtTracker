@@ -510,6 +510,12 @@ def setup_home(home_artworks, first_run=False):
         item_frame_5.destroy()
 
 def forget_home_buttons():
+    global artwork_button_1
+    global artwork_button_2
+    global artwork_button_3
+    global artwork_button_4
+    global artwork_button_5
+
     buttons = [artwork_button_1, artwork_button_2, artwork_button_3, artwork_button_4, artwork_button_5]
     for button in buttons:
         button.destroy()
@@ -741,45 +747,64 @@ def update_fanart(artwork):
 
 
 #filter database functions
+def create_filter_dict(type):
+    filters = {}
+
+    #gets all filters where the input is not empty
+    if name_inp.get().strip() != "":
+        filters['name'] = name_inp.get().strip()
+    if desc_inp.get().strip() != "":
+        filters['description'] = desc_inp.get().strip()
+    if clicked.get().strip() != "":
+        filters['status'] = clicked.get().strip()
+    if medium_inp.get().strip() != "":
+        filters['medium'] = medium_inp.get().strip()
+
+    if type == Original:
+        if subject_inp.get().strip() != "":
+            filters['subject'] = subject_inp.get().strip()
+    else:
+        if fandom_inp.get().strip() != "":
+            filters['fandom'] = fandom_inp.get().strip()
+        if character_inp.get().strip() != "":
+            filters['character'] = character_inp.get().strip()
+
+    return filters
+
+
 def filter_originals():
+    filters = create_filter_dict(Original)
     filtered_originals = []
-    #creates a list of all existing originals
-    # for a in all_artworks:
-    #     if type(a) == Original:
-    #         filtered_originals.append(a)
 
-    # #filters based on which entry fields are full
-    # if name_inp.get() != "":
-    #     for b in filtered_originals:
-    #         if b.name != name_inp.get():
-    #             filtered_originals.remove(b)
-    # if desc_inp.get() != "":
-    #     for c in filtered_originals:
-    #         if c.name != desc_inp.get():
-    #             filtered_originals.remove(c)
-    # if clicked.get() != "":
-    #     for d in filtered_originals:
-    #         if d.name != clicked.get():
-    #             filtered_originals.remove(d)
-    # if medium_inp.get() != "":
-    #     for e in filtered_originals:
-    #         if e.name != medium_inp.get():
-    #             filtered_originals.remove(e)
-    # if subject_inp.get() != "":
-    #     for f in filtered_originals:
-    #         if f.name != subject_inp.get():
-    #             filtered_originals.remove(f)
+    for artwork in original_list:
+        match = True
+        for attribute, value in filters.items():
+            if getattr(artwork, attribute) != value:
+                match = False
+        if match == True:
+            filtered_originals.append(artwork)
     
-    # for test in filtered_originals:
-    #     print(test.name)
+    forget_home_buttons()
+    setup_home(filtered_originals)
+    
+    creation_window.destroy()
 
-    # forget_home_buttons()
-    # setup_home(filtered_originals)
-    
-    # creation_window.destroy()
 
 def filter_fanarts():
+    filters = create_filter_dict(Fanart)
     filtered_fanarts = []
+
+    for artwork in fanart_list:
+        match = True
+        for attribute, value in filters.items():
+            if getattr(artwork, attribute) != value:
+                match = False
+        if match == True:
+            filtered_fanarts.append(artwork)
+    
+    forget_home_buttons()
+    setup_home(filtered_fanarts)
+    
     creation_window.destroy()
 
 
