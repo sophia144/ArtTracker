@@ -5,6 +5,13 @@ from PIL import ImageTk, Image
 from tkinter import messagebox
 import datetime
 
+#modules for the graph window
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from matplotlib import colormaps
+
+
 #creating classes 
 #artwork parent class
 class Artwork:
@@ -525,7 +532,19 @@ def forget_home_buttons():
     global artwork_button_4
     global artwork_button_5
 
-    buttons = [artwork_button_1, artwork_button_2, artwork_button_3, artwork_button_4, artwork_button_5]
+    if len(all_artworks) >= 5:
+        buttons = [artwork_button_1, artwork_button_2, artwork_button_3, artwork_button_4, artwork_button_5]
+    elif len(all_artworks) == 4:
+        buttons = [artwork_button_1, artwork_button_2, artwork_button_3, artwork_button_4]
+    elif len(all_artworks) == 3:
+        buttons = [artwork_button_1, artwork_button_2, artwork_button_3]
+    elif len(all_artworks) == 2:
+        buttons = [artwork_button_1, artwork_button_2]
+
+    
+
+
+
     for button in buttons:
         button.destroy()
 
@@ -538,6 +557,9 @@ def update_variables():
     all_artworks = fanart_list + original_list
     forget_home_buttons()
     setup_home(current_artworks)
+
+    if len(all_artworks) > 5:
+        forward_button.config(state=NORMAL)
 
 
 #scrolling funtions
@@ -567,11 +589,36 @@ def scroll_forward(page_num):
     destroy_item_frames()
     reinitialize_frames()
 
-    buttons = [artwork_button_1, artwork_button_2, artwork_button_3, artwork_button_4, artwork_button_5]
+    if len(all_artworks) >= 5:
+        buttons = [artwork_button_1, artwork_button_2, artwork_button_3, artwork_button_4, artwork_button_5]
+    elif len(all_artworks) == 4:
+        buttons = [artwork_button_1, artwork_button_2, artwork_button_3, artwork_button_4]
+    elif len(all_artworks) == 3:
+        buttons = [artwork_button_1, artwork_button_2, artwork_button_3]
+    else:
+        buttons = [artwork_button_1, artwork_button_2]
+
     frames = [item_frame_1, item_frame_2, item_frame_3, item_frame_4, item_frame_5]
 
-    delete_buttons = [delete_1, delete_2, delete_3, delete_4, delete_5]
-    edit_buttons = [edit_1, edit_2, edit_3, edit_4, edit_5]
+    if len(all_artworks) >= 5:
+        delete_buttons = [delete_1, delete_2, delete_3, delete_4, delete_5]
+    elif len(all_artworks) == 4:
+        delete_buttons = [delete_1, delete_2, delete_3, delete_4]
+    elif len(all_artworks) == 3:
+        delete_buttons = [delete_1, delete_2, delete_3]
+    else:
+        delete_buttons = [delete_1, delete_2]
+
+
+    if len(all_artworks) >= 5:
+        edit_buttons = [edit_1, edit_2, edit_3, edit_4, edit_5]
+    elif len(all_artworks) == 4:
+        edit_buttons = [edit_1, edit_2, edit_3, edit_4]
+    elif len(all_artworks) == 3:
+        edit_buttons = [edit_1, edit_2, edit_3]
+    else:
+        edit_buttons = [edit_1, edit_2]
+
 
     delete_buttons = create_delete_list(current_artworks)
     edit_buttons = create_edit_list(current_artworks)
@@ -643,11 +690,35 @@ def scroll_back(page_num):
     destroy_item_frames()
     reinitialize_frames()
 
-    buttons = [artwork_button_1, artwork_button_2, artwork_button_3, artwork_button_4, artwork_button_5]
+    if len(all_artworks) >= 5:
+        buttons = [artwork_button_1, artwork_button_2, artwork_button_3, artwork_button_4, artwork_button_5]
+    elif len(all_artworks) == 4:
+        buttons = [artwork_button_1, artwork_button_2, artwork_button_3, artwork_button_4]
+    elif len(all_artworks) == 3:
+        buttons = [artwork_button_1, artwork_button_2, artwork_button_3]
+    else:
+        buttons = [artwork_button_1, artwork_button_2]
+
     frames = [item_frame_1, item_frame_2, item_frame_3, item_frame_4, item_frame_5]
 
-    delete_buttons = [delete_1, delete_2, delete_3, delete_4, delete_5]
-    edit_buttons = [edit_1, edit_2, edit_3, edit_4, edit_5]
+    if len(all_artworks) >= 5:
+        delete_buttons = [delete_1, delete_2, delete_3, delete_4, delete_5]
+    elif len(all_artworks) == 4:
+        delete_buttons = [delete_1, delete_2, delete_3, delete_4]
+    elif len(all_artworks) == 3:
+        delete_buttons = [delete_1, delete_2, delete_3]
+    else:
+        delete_buttons = [delete_1, delete_2]
+
+
+    if len(all_artworks) >= 5:
+        edit_buttons = [edit_1, edit_2, edit_3, edit_4, edit_5]
+    elif len(all_artworks) == 4:
+        edit_buttons = [edit_1, edit_2, edit_3, edit_4]
+    elif len(all_artworks) == 3:
+        edit_buttons = [edit_1, edit_2, edit_3]
+    else:
+        edit_buttons = [edit_1, edit_2]
 
     delete_buttons = create_delete_list(current_artworks)
     edit_buttons = create_edit_list(current_artworks)
@@ -884,57 +955,158 @@ def create_graph(artworks):
     in_progress = 0
     completed = 0
 
+    for artwork in artworks:
+        if artwork.status == 'Planned':
+            planned += 1
+        elif artwork.status == 'In Progress':
+            in_progress += 1
+        else:
+            completed += 1
+
+    #plots a bar chart from the data above
+    fig, ax = plt.subplots(figsize=(9,7))
+    
+    categories = ['Planned', 'In Progress', 'Completed']
+    values = [planned, in_progress, completed]
+    colors = ['lightcoral', 'goldenrod', 'yellowgreen']
+    
+    ax.bar(categories, values, color=colors, width=0.65)
+    plt.xlabel('Status', fontsize=15, labelpad=20)
+    plt.ylabel('Artworks', fontsize=15, labelpad=20)
+    ax.set_title('Artworks by Status', fontsize=20, pad=20)
+    plt.xticks(fontsize=12)
+    plt.yticks(fontsize=12)
+    plt.savefig("bar_chart.png", format="png", dpi=60)
+    plt.close()
+
 
 
 #graph page functionality
 def create_graph_window():
     global graph_window
+    global bar_photo
 
     graph_window = Toplevel(root)
     graph_window.title("Statistics")
     graph_window.geometry("1000x625")
-    graph_window.configure(bg='#7B8292')
+    graph_window.configure(bg='#9399AC')
     graph_window.wm_iconphoto(False, photo)
     graph_window.grab_set()
+    
+    graph_frame = LabelFrame(graph_window, padx=50, pady=50, bg='#FFFFFF', bd=0)
+    graph_frame.grid(row=0, column=1, padx=(20, 50), pady=50, sticky="NESW")
+    graph_frame.columnconfigure(0, weight=1)
+    graph_frame.rowconfigure(0, weight=1)
+
+    create_graph(all_artworks)
+
+    bar_photo = ImageTk.PhotoImage(Image.open("bar_chart.png"))
+    bar_label = Label(graph_frame, text = "graph", image=bar_photo, bd=0)
+    bar_label.pack(anchor='center')
+
+    stats_frame = LabelFrame(graph_window, padx=10, pady=10, bg='#FFFFFF', bd=0)
+    stats_frame.grid(row=0, column=0, padx=(50, 20), pady=50, sticky="NESW")
+
+    sum_lbl = Label(stats_frame, text="Artworks", bg='#FFFFFF', fg='#4D5660', font=("Segoe UI Black", 22))
+    sum_lbl.grid(row=0, column=0, sticky="W", padx=5)
+    sum_stat = Label(stats_frame, text=f"{len(all_artworks)}", bg='#FFFFFF', fg='#4D5660', borderwidth=8, relief="flat", font=("Helvetica", 22))
+    sum_stat.grid(row=1, column=0, sticky="W")
+
+    space_lbl = Label(stats_frame, text = " ", bg='#FFFFFF')
+    space_lbl.grid(row=2, column=0, sticky="W")
+
+    sum_originals_lbl = Label(stats_frame, text="Originals", bg='#FFFFFF', fg='#4D5660', font=("Segoe UI Black", 22))
+    sum_originals_lbl.grid(row=3, column=0, sticky="W", padx=5)
+    sum_originals_stat = Label(stats_frame, text=f"{len(original_list)}", bg='#FFFFFF', fg='#4D5660', borderwidth=8, relief="flat", font=("Helvetica", 22))
+    sum_originals_stat.grid(row=4, column=0, sticky="W")
+
+    sum_fanarts_lbl = Label(stats_frame, text="Fanarts", bg='#FFFFFF', fg='#4D5660', font=("Segoe UI Black", 22))
+    sum_fanarts_lbl.grid(row=5, column=0, sticky="W", padx=5)
+    sum_fanarts_stat = Label(stats_frame, text=f"{len(fanart_list)}", bg='#FFFFFF', fg='#4D5660', borderwidth=8, relief="flat", font=("Helvetica", 22))
+    sum_fanarts_stat.grid(row=6, column=0, sticky="W")
 
     #configuring the main grid 
-    graph_window.columnconfigure(0,weight=1) 
-    graph_window.rowconfigure(0, weight=1) 
+    graph_window.columnconfigure(0,weight=1, uniform="equal") 
+    graph_window.columnconfigure(1, weight=2, uniform="equal")
+    graph_window.rowconfigure(0, weight=1, uniform="equal") 
+
 
 
 current_artworks = all_artworks
 setup_home(current_artworks, first_run=True)
+
+
 
 forward_button = Button(bg_frame, text=">", image=forward_img, bg='#7B8292', bd=0, command=lambda: scroll_forward(2))
 forward_button.grid(row=2, column=2, sticky="NESW")
 back_button = Button(bg_frame, text=">", image=back_img, bg='#7B8292', bd=0, command=lambda: scroll_back(1), state=DISABLED)
 back_button.grid(row=2, column=0, sticky="NESW")
 
+if len(all_artworks) <= 5:
+    forward_button.config(state=DISABLED)
 
-#creating the delete icons
-delete_1 = Button(item_frame_1, bd=0, text="Delete", image=delete_img, bg='#9399AC', command=lambda artwork=(create_buttons_list(current_artworks))[1][page_num - 1][0]: delete_artwork(artwork))
-delete_1.pack(side=RIGHT)
-delete_2 = Button(item_frame_2, bd=0, text="Delete", image=delete_img, bg='#9399AC', command=lambda artwork=(create_buttons_list(current_artworks))[1][page_num - 1][1]: delete_artwork(artwork))
-delete_2.pack(side=RIGHT)
-delete_3 = Button(item_frame_3, bd=0, text="Delete", image=delete_img, bg='#9399AC', command=lambda artwork=(create_buttons_list(current_artworks))[1][page_num - 1][2]: delete_artwork(artwork))
-delete_3.pack(side=RIGHT)
-delete_4 = Button(item_frame_4, bd=0, text="Delete", image=delete_img, bg='#9399AC', command=lambda artwork=(create_buttons_list(current_artworks))[1][page_num - 1][3]: delete_artwork(artwork))
-delete_4.pack(side=RIGHT)
-delete_5 = Button(item_frame_5, bd=0, text="Delete", image=delete_img, bg='#9399AC', command=lambda artwork=(create_buttons_list(current_artworks))[1][page_num - 1][4]: delete_artwork(artwork))
-delete_5.pack(side=RIGHT)
+#creating the delete icons 
+try:
+    delete_1 = Button(item_frame_1, bd=0, text="Delete", image=delete_img, bg='#9399AC', command=lambda artwork=(create_buttons_list(current_artworks))[1][page_num - 1][0]: delete_artwork(artwork))
+    delete_1.pack(side=RIGHT)
+except IndexError:
+    pass
 
+try:
+    delete_2 = Button(item_frame_2, bd=0, text="Delete", image=delete_img, bg='#9399AC', command=lambda artwork=(create_buttons_list(current_artworks))[1][page_num - 1][1]: delete_artwork(artwork))
+    delete_2.pack(side=RIGHT)
+except IndexError:
+    pass
 
+try:
+    delete_3 = Button(item_frame_3, bd=0, text="Delete", image=delete_img, bg='#9399AC', command=lambda artwork=(create_buttons_list(current_artworks))[1][page_num - 1][2]: delete_artwork(artwork))
+    delete_3.pack(side=RIGHT)
+except IndexError:
+    pass
 
-edit_1 = Button(item_frame_1, bd=0, text="Edit", image=edit_img, bg='#9399AC', command=lambda type=type((create_buttons_list(current_artworks))[1][page_num - 1][0]), artwork=(create_buttons_list(current_artworks))[1][page_num - 1][0]: artwork_info_window(type, 'edit', artwork))
-edit_1.pack(side=RIGHT, padx=10)
-edit_2 = Button(item_frame_2, bd=0, text="Edit", image=edit_img, bg='#9399AC', command=lambda type=type((create_buttons_list(current_artworks))[1][page_num - 1][1]), artwork=(create_buttons_list(current_artworks))[1][page_num - 1][1]: artwork_info_window(type, 'edit', artwork))
-edit_2.pack(side=RIGHT, padx=10)
-edit_3 = Button(item_frame_3, bd=0, text="Edit", image=edit_img, bg='#9399AC', command=lambda type=type((create_buttons_list(current_artworks))[1][page_num - 1][2]), artwork=(create_buttons_list(current_artworks))[1][page_num - 1][2]: artwork_info_window(type, 'edit', artwork))
-edit_3.pack(side=RIGHT, padx=10)
-edit_4 = Button(item_frame_4, bd=0, text="Edit", image=edit_img, bg='#9399AC', command=lambda type=type((create_buttons_list(current_artworks))[1][page_num - 1][3]), artwork=(create_buttons_list(current_artworks))[1][page_num - 1][3]: artwork_info_window(type, 'edit', artwork))
-edit_4.pack(side=RIGHT, padx=10)
-edit_5 = Button(item_frame_5, bd=0, text="Edit", image=edit_img, bg='#9399AC', command=lambda type=type((create_buttons_list(current_artworks))[1][page_num - 1][4]), artwork=(create_buttons_list(current_artworks))[1][page_num - 1][4]: artwork_info_window(type, 'edit', artwork))
-edit_5.pack(side=RIGHT, padx=10)
+try:
+    delete_4 = Button(item_frame_4, bd=0, text="Delete", image=delete_img, bg='#9399AC', command=lambda artwork=(create_buttons_list(current_artworks))[1][page_num - 1][3]: delete_artwork(artwork))
+    delete_4.pack(side=RIGHT)
+except IndexError:
+    pass
+
+try:
+    delete_5 = Button(item_frame_5, bd=0, text="Delete", image=delete_img, bg='#9399AC', command=lambda artwork=(create_buttons_list(current_artworks))[1][page_num - 1][4]: delete_artwork(artwork))
+    delete_5.pack(side=RIGHT)
+except IndexError:
+    pass
+
+#creating the edit icons 
+try:
+    edit_1 = Button(item_frame_1, bd=0, text="Edit", image=edit_img, bg='#9399AC', command=lambda type=type((create_buttons_list(current_artworks))[1][page_num - 1][0]), artwork=(create_buttons_list(current_artworks))[1][page_num - 1][0]: artwork_info_window(type, 'edit', artwork))
+    edit_1.pack(side=RIGHT, padx=10)
+except IndexError:
+    pass
+
+try:
+    edit_2 = Button(item_frame_2, bd=0, text="Edit", image=edit_img, bg='#9399AC', command=lambda type=type((create_buttons_list(current_artworks))[1][page_num - 1][1]), artwork=(create_buttons_list(current_artworks))[1][page_num - 1][1]: artwork_info_window(type, 'edit', artwork))
+    edit_2.pack(side=RIGHT, padx=10)
+except IndexError:
+    pass
+
+try:
+    edit_3 = Button(item_frame_3, bd=0, text="Edit", image=edit_img, bg='#9399AC', command=lambda type=type((create_buttons_list(current_artworks))[1][page_num - 1][2]), artwork=(create_buttons_list(current_artworks))[1][page_num - 1][2]: artwork_info_window(type, 'edit', artwork))
+    edit_3.pack(side=RIGHT, padx=10)
+except IndexError:
+    pass
+
+try:
+    edit_4 = Button(item_frame_4, bd=0, text="Edit", image=edit_img, bg='#9399AC', command=lambda type=type((create_buttons_list(current_artworks))[1][page_num - 1][3]), artwork=(create_buttons_list(current_artworks))[1][page_num - 1][3]: artwork_info_window(type, 'edit', artwork))
+    edit_4.pack(side=RIGHT, padx=10)
+except IndexError:
+    pass
+
+try:
+    edit_5 = Button(item_frame_5, bd=0, text="Edit", image=edit_img, bg='#9399AC', command=lambda type=type((create_buttons_list(current_artworks))[1][page_num - 1][4]), artwork=(create_buttons_list(current_artworks))[1][page_num - 1][4]: artwork_info_window(type, 'edit', artwork))
+    edit_5.pack(side=RIGHT, padx=10)
+except IndexError:
+    pass
+
 
 
 #creating the options functionality to choose between original or fanart
