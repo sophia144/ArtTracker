@@ -97,6 +97,7 @@ root.columnconfigure(3,weight=1)
 root.rowconfigure(0, weight=1) 
 root.rowconfigure(1, weight=1) 
 root.rowconfigure(2, weight=1) 
+root.rowconfigure(3, weight=1) 
 
 
 #changing the icon
@@ -112,6 +113,7 @@ edit_img = ImageTk.PhotoImage(Image.open("ArtTracker/resources/edit_icon.png"))
 filter_img = ImageTk.PhotoImage(Image.open("ArtTracker/resources/filter_icon.png"))
 add_img = ImageTk.PhotoImage(Image.open("ArtTracker/resources/add_img.png"))
 home_img = ImageTk.PhotoImage(Image.open("ArtTracker/resources/home_icon.png"))
+chart_img = ImageTk.PhotoImage(Image.open("ArtTracker/resources/chart_icon.png"))
 
 #setting up list of artworks
 fanart_list, original_list = read_csv()
@@ -119,7 +121,7 @@ all_artworks = fanart_list + original_list
 
 #formatting the artworks window
 bg_frame = LabelFrame(root, padx=0, pady=30, bg='#7B8292', bd=0)
-bg_frame.grid(row=0, column=0, padx=50, pady=50, sticky="NESW", rowspan=3)
+bg_frame.grid(row=0, column=0, padx=50, pady=50, sticky="NESW", rowspan=4)
 
 bg_frame.columnconfigure(0,weight=1)
 bg_frame.columnconfigure(1,weight=6)
@@ -923,7 +925,7 @@ def choose_arttype(action):
     
 #formatting the options strip
 options_frame = LabelFrame(root, padx=30, pady=30, bg='#4D5660', bd=0)
-options_frame.grid(row=0, column=2, sticky="NESW", rowspan=3)
+options_frame.grid(row=0, column=2, sticky="NESW", rowspan=4)
 
 #options
 filter_bg = Frame(root, bg='#FFFFFF', bd=0) 
@@ -932,6 +934,8 @@ add_bg = Frame(root, bg='#FFFFFF', bd=0)
 add_bg.grid(row=1, column=1, padx=10, pady=10, columnspan=3)
 home_bg = Frame(root, bg='#FFFFFF', bd=0) 
 home_bg.grid(row=2, column=1, padx=10, pady=10, columnspan=3)
+chart_bg = Frame(root, bg='#FFFFFF', bd=0) 
+chart_bg.grid(row=3, column=1, padx=10, pady=10, columnspan=3)
 
 
 filter_btn = Button(filter_bg, relief='flat', text="Search", image=filter_img, bg='#E2CDB4', bd=10, command=lambda: choose_arttype('filter'))
@@ -940,6 +944,9 @@ add_btn = Button(add_bg, relief='flat', text="Add", image=add_img, bg='#E2CDB4',
 add_btn.grid(row=0, column=0, padx=10, pady=10)
 home_btn = Button(home_bg, relief='flat', text="Home", image=home_img, bg='#E2CDB4', bd=10, command=setup_home(all_artworks))
 home_btn.grid(row=0, column=0, padx=10, pady=10)
+chart_btn = Button(chart_bg, relief='flat', text="Charts", image=chart_img, bg='#E2CDB4', bd=10)
+chart_btn.grid(row=0, column=0, padx=10, pady=10)
+
 
 
 
