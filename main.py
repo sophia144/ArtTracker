@@ -11,6 +11,10 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib import colormaps
 
+#modules for restarting
+import sys
+import os
+
 
 #creating classes 
 #artwork parent class
@@ -540,10 +544,6 @@ def forget_home_buttons():
         buttons = [artwork_button_1, artwork_button_2, artwork_button_3]
     elif len(all_artworks) == 2:
         buttons = [artwork_button_1, artwork_button_2]
-
-    
-
-
 
     for button in buttons:
         button.destroy()
@@ -1108,7 +1108,6 @@ except IndexError:
     pass
 
 
-
 #creating the options functionality to choose between original or fanart
 def choose_arttype(action):
     arttype_dialog = Toplevel(root)
@@ -1163,13 +1162,10 @@ filter_btn = Button(filter_bg, relief='flat', text="Search", image=filter_img, b
 filter_btn.grid(row=0, column=0, padx=10, pady=10)
 add_btn = Button(add_bg, relief='flat', text="Add", image=add_img, bg='#E2CDB4', bd=10, command=lambda: choose_arttype('create'))
 add_btn.grid(row=0, column=0, padx=10, pady=10)
-home_btn = Button(home_bg, relief='flat', text="Home", image=home_img, bg='#E2CDB4', bd=10, command=setup_home(all_artworks))
+home_btn = Button(home_bg, relief='flat', text="Home", image=home_img, bg='#E2CDB4', bd=10, command=lambda: print('please close the program and open it again'))
 home_btn.grid(row=0, column=0, padx=10, pady=10)
 chart_btn = Button(chart_bg, relief='flat', text="Charts", image=chart_img, bg='#E2CDB4', bd=10, command=create_graph_window)
 chart_btn.grid(row=0, column=0, padx=10, pady=10)
-
-
-
 
 
 root.mainloop()
