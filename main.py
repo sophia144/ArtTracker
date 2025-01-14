@@ -23,7 +23,6 @@ class Artwork:
         self.status = status
         self.medium = medium
 
-
 #fanart subclass
 class Fanart(Artwork):
     def __init__(self, name, desc, status, medium, fandom, character, creation_date=None):
@@ -154,15 +153,15 @@ item_frame_4.rowconfigure(0,weight=1)
 item_frame_5.rowconfigure(0,weight=1) 
 
 
-def create_buttons_list(all_artworks):
+def create_buttons_list(current_artworks):
     #calculating the number of pages
-    num_pages = len(all_artworks) // 5
+    num_pages = len(current_artworks) // 5
     artwork_buttons = []
 
     #creating a button for each artwork in the list
     artworks_by_page = []
-    for i in range(0, len(all_artworks), 5):
-        artworks_by_page += [all_artworks[i:i + 5]]
+    for i in range(0, len(current_artworks), 5):
+        artworks_by_page += [current_artworks[i:i + 5]]
 
 
     for page in artworks_by_page:
@@ -192,13 +191,19 @@ def create_buttons_list(all_artworks):
         return artwork_buttons, artworks_by_page
 
 
-def setup_home(all_artworks):
+def setup_home(home_artworks, first_run=False):
     global artwork_button_1
     global artwork_button_2
     global artwork_button_3
     global artwork_button_4
     global artwork_button_5
-    artwork_buttons, artworks_by_page = create_buttons_list(all_artworks)
+    global current_artworks
+
+    artwork_buttons, artworks_by_page = create_buttons_list(current_artworks)
+    current_artworks = home_artworks
+
+    if first_run == False:
+           forget_home_buttons()
 
     try:
         artwork_button_1 = artwork_buttons[0]
@@ -239,16 +244,15 @@ def forget_home_buttons():
     artwork_button_5.destroy()
 
 
-setup_home(all_artworks)
-
-
 
 def update_variables():
     global all_artworks
+    global current_artworks
+    current_artworks = all_artworks
     write_csv(fanart_list, original_list)
     all_artworks = fanart_list + original_list
     forget_home_buttons()
-    setup_home(all_artworks)
+    setup_home(current_artworks)
 
 #save artowrk functions
 def save_original():
@@ -304,10 +308,45 @@ def update_fanart(artwork):
 
 #filter database functions
 def filter_originals():
+    filtered_originals = []
+    #creates a list of all existing originals
+    for a in all_artworks:
+        if type(a) == Original:
+            filtered_originals.append(a)
+
+    #filters based on which entry fields are full
+    if name_inp.get() != "":
+        for b in filtered_originals:
+            if b.name != name_inp.get():
+                filtered_originals.remove(b)
+    # if desc_inp.get() != "":
+    #     for c in filtered_originals:
+    #         if c.name != desc_inp.get():
+    #             filtered_originals.remove(c)
+    # if clicked.get() != "":
+    #     for d in filtered_originals:
+    #         if d.name != clicked.get():
+    #             filtered_originals.remove(d)
+    # if medium_inp.get() != "":
+    #     for e in filtered_originals:
+    #         if e.name != medium_inp.get():
+    #             filtered_originals.remove(e)
+    # if subject_inp.get() != "":
+    #     for f in filtered_originals:
+    #         if f.name != subject_inp.get():
+    #             filtered_originals.remove(f)
+    
+    for test in filtered_originals:
+        print(test.name)
+
+    forget_home_buttons()
+    setup_home(filtered_originals)
+    
     creation_window.destroy()
 
 
 def filter_fanarts():
+    filtered_fanarts = []
     creation_window.destroy()
 
 
@@ -367,8 +406,13 @@ def artwork_info_window(arttype, action, artwork=None):
     clicked = StringVar() 
     clicked.set("Planned") 
     # Create Dropdown menu 
-    options = ["Planned", "In Progress", "Completed"] 
-    status_inp = OptionMenu(info_frame, clicked, *options) 
+    if action == 'filter':
+        options = ["", "Planned", "In Progress", "Completed"] 
+        status_inp = OptionMenu(info_frame, clicked, *options) 
+    else:
+        options = ["Planned", "In Progress", "Completed"] 
+        status_inp = OptionMenu(info_frame, clicked, *options) 
+    
     status_inp.config(width=50, bg='#FFFFFF', fg='#4D5660', borderwidth=8, relief="flat", font=("Helvetica", 16), anchor="w")
     status_inp.grid(row=3, column=0, sticky="W", padx=(2, 50))
 
@@ -514,6 +558,9 @@ def artwork_info_window(arttype, action, artwork=None):
 
 #delete functionality
 def delete_artwork(artwork):
+    if len(current_artworks) == 1:
+         messagebox.showerror('Error', 'Error: Minimum number of records is 1')
+
     delete_dialog = Toplevel(root)
     delete_dialog.title("Delete artwork")
     delete_dialog.geometry("400x200")
@@ -552,20 +599,22 @@ def delete_artwork(artwork):
     no_btn.grid(row=2, column=1, padx=25, pady=25, sticky="NESW")
 
 
+current_artworks = all_artworks
+setup_home(current_artworks, first_run=True)
 
 
 #creating the delete icons
 delete_img = ImageTk.PhotoImage(Image.open("ArtTracker/resources/delete_icon.png"))
 
-delete_1 = Button(item_frame_1, bd=0, text="Delete", image=delete_img, bg='#9399AC', command=lambda: delete_artwork((create_buttons_list(all_artworks))[1][page_num - 1][0]))
+delete_1 = Button(item_frame_1, bd=0, text="Delete", image=delete_img, bg='#9399AC', command=lambda: delete_artwork((create_buttons_list(current_artworks))[1][page_num - 1][0]))
 delete_1.pack(side=RIGHT)
-delete_2 = Button(item_frame_2, bd=0, text="Delete", image=delete_img, bg='#9399AC', command=lambda: delete_artwork((create_buttons_list(all_artworks))[1][page_num - 1][1]))
+delete_2 = Button(item_frame_2, bd=0, text="Delete", image=delete_img, bg='#9399AC', command=lambda: delete_artwork((create_buttons_list(current_artworks))[1][page_num - 1][1]))
 delete_2.pack(side=RIGHT)
-delete_3 = Button(item_frame_3, bd=0, text="Delete", image=delete_img, bg='#9399AC', command=lambda: delete_artwork((create_buttons_list(all_artworks))[1][page_num - 1][2]))
+delete_3 = Button(item_frame_3, bd=0, text="Delete", image=delete_img, bg='#9399AC', command=lambda: delete_artwork((create_buttons_list(current_artworks))[1][page_num - 1][2]))
 delete_3.pack(side=RIGHT)
-delete_4 = Button(item_frame_4, bd=0, text="Delete", image=delete_img, bg='#9399AC', command=lambda: delete_artwork((create_buttons_list(all_artworks))[1][page_num - 1][3]))
+delete_4 = Button(item_frame_4, bd=0, text="Delete", image=delete_img, bg='#9399AC', command=lambda: delete_artwork((create_buttons_list(current_artworks))[1][page_num - 1][3]))
 delete_4.pack(side=RIGHT)
-delete_5 = Button(item_frame_5, bd=0, text="Delete", image=delete_img, bg='#9399AC', command=lambda: delete_artwork((create_buttons_list(all_artworks))[1][page_num - 1][4]))
+delete_5 = Button(item_frame_5, bd=0, text="Delete", image=delete_img, bg='#9399AC', command=lambda: delete_artwork((create_buttons_list(current_artworks))[1][page_num - 1][4]))
 delete_5.pack(side=RIGHT)
 
 
@@ -573,15 +622,15 @@ edit_img = ImageTk.PhotoImage(Image.open("ArtTracker/resources/edit_icon.png"))
 
 
 
-edit_1 = Button(item_frame_1, bd=0, text="Edit", image=edit_img, bg='#9399AC', command=lambda: artwork_info_window('original', 'edit', (create_buttons_list(all_artworks))[1][page_num - 1][0]))
+edit_1 = Button(item_frame_1, bd=0, text="Edit", image=edit_img, bg='#9399AC', command=lambda: artwork_info_window('original', 'edit', (create_buttons_list(current_artworks))[1][page_num - 1][0]))
 edit_1.pack(side=RIGHT, padx=10)
-edit_2 = Button(item_frame_2, bd=0, text="Edit", image=edit_img, bg='#9399AC', command=lambda: artwork_info_window('original', 'edit', (create_buttons_list(all_artworks))[1][page_num - 1][1]))
+edit_2 = Button(item_frame_2, bd=0, text="Edit", image=edit_img, bg='#9399AC', command=lambda: artwork_info_window('original', 'edit', (create_buttons_list(current_artworks))[1][page_num - 1][1]))
 edit_2.pack(side=RIGHT, padx=10)
-edit_3 = Button(item_frame_3, bd=0, text="Edit", image=edit_img, bg='#9399AC', command=lambda: artwork_info_window('original', 'edit', (create_buttons_list(all_artworks))[1][page_num - 1][2]))
+edit_3 = Button(item_frame_3, bd=0, text="Edit", image=edit_img, bg='#9399AC', command=lambda: artwork_info_window('original', 'edit', (create_buttons_list(current_artworks))[1][page_num - 1][2]))
 edit_3.pack(side=RIGHT, padx=10)
-edit_4 = Button(item_frame_4, bd=0, text="Edit", image=edit_img, bg='#9399AC', command=lambda: artwork_info_window('original', 'edit', (create_buttons_list(all_artworks))[1][page_num - 1][3]))
+edit_4 = Button(item_frame_4, bd=0, text="Edit", image=edit_img, bg='#9399AC', command=lambda: artwork_info_window('original', 'edit', (create_buttons_list(current_artworks))[1][page_num - 1][3]))
 edit_4.pack(side=RIGHT, padx=10)
-edit_5 = Button(item_frame_5, bd=0, text="Edit", image=edit_img, bg='#9399AC', command=lambda: artwork_info_window('original', 'edit', (create_buttons_list(all_artworks))[1][page_num - 1][4]))
+edit_5 = Button(item_frame_5, bd=0, text="Edit", image=edit_img, bg='#9399AC', command=lambda: artwork_info_window('original', 'edit', (create_buttons_list(current_artworks))[1][page_num - 1][4]))
 edit_5.pack(side=RIGHT, padx=10)
 
 
@@ -633,6 +682,7 @@ options_frame.grid(row=0, column=2, sticky="NESW", rowspan=3)
 #options
 filter_img = ImageTk.PhotoImage(Image.open("ArtTracker/resources/filter_icon.png"))
 add_img = ImageTk.PhotoImage(Image.open("ArtTracker/resources/add_img.png"))
+home_img = ImageTk.PhotoImage(Image.open("ArtTracker/resources/home_icon.png"))
 
 
 
@@ -640,12 +690,17 @@ filter_bg = Frame(root, bg='#FFFFFF', bd=0)
 filter_bg.grid(row=0, column=1, padx=10, pady=10, columnspan=3)
 add_bg = Frame(root, bg='#FFFFFF', bd=0) 
 add_bg.grid(row=1, column=1, padx=10, pady=10, columnspan=3)
+home_bg = Frame(root, bg='#FFFFFF', bd=0) 
+home_bg.grid(row=2, column=1, padx=10, pady=10, columnspan=3)
 
 
 filter_btn = Button(filter_bg, relief='flat', text="Search", image=filter_img, bg='#E2CDB4', bd=10, command=lambda: choose_arttype('filter'))
 filter_btn.grid(row=0, column=0, padx=10, pady=10)
 add_btn = Button(add_bg, relief='flat', text="Add", image=add_img, bg='#E2CDB4', bd=10, command=lambda: choose_arttype('create'))
 add_btn.grid(row=0, column=0, padx=10, pady=10)
+home_btn = Button(home_bg, relief='flat', text="Home", image=home_img, bg='#E2CDB4', bd=10, command=setup_home(all_artworks))
+home_btn.grid(row=0, column=0, padx=10, pady=10)
+
 
 
 

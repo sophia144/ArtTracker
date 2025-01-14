@@ -1,8 +1,9 @@
-fanart, Curious, Digital painting of Miles Morales with black background, In Progress, Digital, None, Spiderverse, Miles Morales, 2023-01-27
-fanart, Former lives, Study of past lives screenshot, In Progress, Digital, None, Puss in boots, Puss in boots, 2025-01-13
-fanart, Not so fireproof, Sketch of toothless in the style of Hiccup's sketchbook, In Progress, Watercolour, None, How to train your dragon, Toothless, 2025-01-13
-original, Moonlight, A masked character in front of mountains, Completed, Digital, Masked character, None, None, 2023-06-21
-original, Seafoam, Painting of a beach with a palm tree, Completed, Digital, Beach, None, None, 2022-12-13
-original, Clouds, Painting of clouds, In Progress, Acrylic, Clouds, None, None, 2025-01-1
-original, Leaves in the wind, An oil painting of a tree losing its leaves in the autumn, Completed, Oil, Tree, None, None, 2025-01
-original, Deserted, Painting of boat, Planned, Oil, Boat, None, None, 2025
+fanart, Not so fireproof, Sketchbook drawing of toothless in the style of the movie, Planned, pencil, None, HTTYD, Toothless, 2024-01-13
+fanart, Genius and madness, Screencap study, Planned, Gouache, None, Arcane, Powder, 2025-01-12
+fanart, Finale, Piece showing the characters at the end of Season 2, Planned, Digital, None, Arcane, Ekko, 2024-12-14
+fanart, No time for caution, Screencap study, In Progress, Gouache, None, Interstellar, Forgotten, 2022-03-23
+original, Curiosity, Impressionist style piece of NASA's Curiosity rover, Completed, Oil, Curiosity, None, None, 2022-04-13
+original, Black hole, Person looking at computer late at night, Completed, Digital, Computer, None, None, 2023-05-23
+original, Skater, Person ice skating in front of Toronto skyline, Planned, Oil, Skater, None, None, 2021-01-2
+original, Memories, Study of a photo of a picture board in a simplified style, Planned, Watercolour, Pictures, None, None, 2023-04-21
+fanart, Crossing paths, Cartoon-style page of Aloy and Nil's meetings, In Progress, Digital, None, Horizon, Aloy, 2025-01-01
