@@ -157,6 +157,13 @@ item_frame_5.rowconfigure(0,weight=1)
 current_artworks = all_artworks
 
 #artwork info window
+def presence_check(input_boxes):
+    full = True
+    for box in input_boxes:
+        if box.get().strip() == "":
+            full = False
+    return full
+
 def artwork_info_window(arttype, action, artwork=None):
     global creation_window
     global name_inp
@@ -616,8 +623,6 @@ def scroll_forward(page_num):
     forward_button.grid(row=2, column=2, sticky="NESW")
     back_button.grid(row=2, column=0, sticky="NESW") 
 
-
-
 def scroll_back(page_num):
     global current_artworks
     global forward_button
@@ -698,54 +703,70 @@ def scroll_back(page_num):
 
 #save artwork functions
 def save_original():
-    name = name_inp.get()
-    desc = desc_inp.get()
-    status = clicked.get()
-    medium = medium_inp.get()
-    subject = subject_inp.get()
-
-    new_original = Original(name, desc, status, medium, subject)
-    original_list.append(new_original)
-    update_variables()
-    setup_home(all_artworks)
-    creation_window.destroy()
+    if presence_check([name_inp, desc_inp, clicked, medium_inp, subject_inp]) == True:
+        name = name_inp.get()
+        desc = desc_inp.get()
+        status = clicked.get()
+        medium = medium_inp.get()
+        subject = subject_inp.get()
+        new_original = Original(name, desc, status, medium, subject)
+        original_list.append(new_original)
+        update_variables()
+        forget_home_buttons()
+        setup_home(all_artworks)
+        creation_window.destroy()
+    else:
+        messagebox.showerror('Validation Error', 'Error: One or more input fields empty')
 
 def save_fanart():
-    name = name_inp.get()
-    desc = desc_inp.get()
-    status = clicked.get()
-    medium = medium_inp.get()
-    fandom = fandom_inp.get()
-    character = character_inp.get()
+    if presence_check([name_inp, desc_inp, clicked, medium_inp, fandom_inp, character_inp]) == True:
+        name = name_inp.get()
+        desc = desc_inp.get()
+        status = clicked.get()
+        medium = medium_inp.get()
+        fandom = fandom_inp.get()
+        character = character_inp.get()
 
-    new_fanart = Fanart(name, desc, status, medium, fandom, character)
-    fanart_list.append(new_fanart)
-    update_variables()
-    setup_home(all_artworks)
-    creation_window.destroy()
+        new_fanart = Fanart(name, desc, status, medium, fandom, character)
+        fanart_list.append(new_fanart)
+        update_variables()
+        forget_home_buttons()
+        setup_home(all_artworks)
+        creation_window.destroy()
+    else:
+        messagebox.showerror('Validation Error', 'Error: One or more input fields empty')
 
 
 #update database functions
 def update_original(artwork):
-    artwork.name = name_inp.get()
-    artwork.desc = desc_inp.get()
-    artwork.status = clicked.get()
-    artwork.medium = medium_inp.get()
-    artwork.subject = subject_inp.get()
+    if presence_check([name_inp, desc_inp, clicked, medium_inp, subject_inp]) == True:
+        artwork.name = name_inp.get()
+        artwork.desc = desc_inp.get()
+        artwork.status = clicked.get()
+        artwork.medium = medium_inp.get()
+        artwork.subject = subject_inp.get()
 
-    update_variables()
-    creation_window.destroy()
+        forget_home_buttons()
+        update_variables()
+        creation_window.destroy()
+    else:
+        messagebox.showerror('Validation Error', 'Error: One or more input fields empty')
+
 
 def update_fanart(artwork):
-    artwork.name = name_inp.get()
-    artwork.desc = desc_inp.get()
-    artwork.status = clicked.get()
-    artwork.medium = medium_inp.get()
-    artwork.fandom = fandom_inp.get()
-    artwork.character = character_inp.get()
+    if presence_check([name_inp, desc_inp, clicked, medium_inp, fandom_inp, character_inp]) == True:
+        artwork.name = name_inp.get()
+        artwork.desc = desc_inp.get()
+        artwork.status = clicked.get()
+        artwork.medium = medium_inp.get()
+        artwork.fandom = fandom_inp.get()
+        artwork.character = character_inp.get()
 
-    update_variables()
-    creation_window.destroy()
+        forget_home_buttons()
+        update_variables()
+        creation_window.destroy()
+    else:
+        messagebox.showerror('Validation Error', 'Error: One or more input fields empty')
 
 
 #filter database functions
@@ -781,17 +802,19 @@ def filter_originals():
     for artwork in original_list:
         match = True
         for attribute, value in filters.items():
-            if getattr(artwork, attribute) != value:
+            if getattr(artwork, attribute).upper() != value.upper():
                 match = False
         if match == True:
             filtered_originals.append(artwork)
     
-    forget_home_buttons()
-    setup_home(filtered_originals)
+    if len(filtered_originals) != 0:
+        forget_home_buttons()
+        setup_home(filtered_originals)
+        creation_window.destroy()
+    else: 
+        messagebox.showerror('Error', 'Error: No artworks meet requirements')
     
-    creation_window.destroy()
-
-
+    
 def filter_fanarts():
     filters = create_filter_dict(Fanart)
     filtered_fanarts = []
@@ -799,15 +822,17 @@ def filter_fanarts():
     for artwork in fanart_list:
         match = True
         for attribute, value in filters.items():
-            if getattr(artwork, attribute) != value:
+            if getattr(artwork, attribute).upper() != value.upper():
                 match = False
         if match == True:
             filtered_fanarts.append(artwork)
     
-    forget_home_buttons()
-    setup_home(filtered_fanarts)
-    
-    creation_window.destroy()
+    if len(filtered_fanarts) != 0:
+        forget_home_buttons()
+        setup_home(filtered_fanarts)
+        creation_window.destroy()
+    else:
+        messagebox.showerror('Error', 'Error: No artworks meet requirements')
 
 
 #delete functionality
@@ -851,6 +876,30 @@ def delete_artwork(artwork):
     yes_btn.grid(row=2, column=0, padx=25, pady=25, sticky="NESW")
     no_btn = Button(delete_dialog, text="No", bg='#9399AC', fg='#FFFFFF', bd=0, command=no_press, font=("Segoe UI Black", 18))
     no_btn.grid(row=2, column=1, padx=25, pady=25, sticky="NESW")
+
+
+#graph creation functionality
+def create_graph(artworks):
+    planned = 0
+    in_progress = 0
+    completed = 0
+
+
+
+#graph page functionality
+def create_graph_window():
+    global graph_window
+
+    graph_window = Toplevel(root)
+    graph_window.title("Statistics")
+    graph_window.geometry("1000x625")
+    graph_window.configure(bg='#7B8292')
+    graph_window.wm_iconphoto(False, photo)
+    graph_window.grab_set()
+
+    #configuring the main grid 
+    graph_window.columnconfigure(0,weight=1) 
+    graph_window.rowconfigure(0, weight=1) 
 
 
 current_artworks = all_artworks
@@ -944,7 +993,7 @@ add_btn = Button(add_bg, relief='flat', text="Add", image=add_img, bg='#E2CDB4',
 add_btn.grid(row=0, column=0, padx=10, pady=10)
 home_btn = Button(home_bg, relief='flat', text="Home", image=home_img, bg='#E2CDB4', bd=10, command=setup_home(all_artworks))
 home_btn.grid(row=0, column=0, padx=10, pady=10)
-chart_btn = Button(chart_bg, relief='flat', text="Charts", image=chart_img, bg='#E2CDB4', bd=10)
+chart_btn = Button(chart_bg, relief='flat', text="Charts", image=chart_img, bg='#E2CDB4', bd=10, command=create_graph_window)
 chart_btn.grid(row=0, column=0, padx=10, pady=10)
 
 
