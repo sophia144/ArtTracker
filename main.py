@@ -137,14 +137,6 @@ item_frame_4.grid(row=3, column=1, sticky="NESW", padx=10, pady=10)
 item_frame_5 = LabelFrame(bg_frame, padx=10, pady=10, bg='#4D5660', bd=0)
 item_frame_5.grid(row=4, column=1, sticky="NESW", padx=10, pady=10)
 
-forward_img = ImageTk.PhotoImage(Image.open("ArtTracker/resources/forward_icon.png"))
-back_img = ImageTk.PhotoImage(Image.open("ArtTracker/resources/back_icon.png"))
-
-forward_button = Button(bg_frame, text=">", image=forward_img, bg='#7B8292', bd=0)
-forward_button.grid(row=2, column=2, sticky="NESW")
-back_button = Button(bg_frame, text=">", image=back_img, bg='#7B8292', bd=0)
-back_button.grid(row=2, column=0, sticky="NESW")
-
 
 item_frame_1.rowconfigure(0,weight=1)
 item_frame_2.rowconfigure(0,weight=1) 
@@ -152,8 +144,35 @@ item_frame_3.rowconfigure(0,weight=1)
 item_frame_4.rowconfigure(0,weight=1) 
 item_frame_5.rowconfigure(0,weight=1) 
 
+current_artworks = all_artworks
+
+def destroy_item_frames():
+    frames = [item_frame_1, item_frame_2, item_frame_3, item_frame_4, item_frame_5]
+    for frame in frames:
+        frame.destroy()
+
+def reinitialize_frames():
+    global item_frame_1
+    global item_frame_2
+    global item_frame_3
+    global item_frame_4
+    global item_frame_5
+
+    item_frame_1 = LabelFrame(bg_frame, padx=10, pady=10, bg='#4D5660', bd=0)
+    item_frame_1.grid(row=0, column=1, sticky="NESW", padx=10, pady=10)
+    item_frame_2 = LabelFrame(bg_frame, padx=10, pady=10, bg='#4D5660', bd=0)
+    item_frame_2.grid(row=1, column=1, sticky="NESW", padx=10, pady=10)
+    item_frame_3 = LabelFrame(bg_frame, padx=10, pady=10, bg='#4D5660', bd=0)
+    item_frame_3.grid(row=2, column=1, sticky="NESW", padx=10, pady=10)
+    item_frame_4 = LabelFrame(bg_frame, padx=10, pady=10, bg='#4D5660', bd=0)
+    item_frame_4.grid(row=3, column=1, sticky="NESW", padx=10, pady=10)
+    item_frame_5 = LabelFrame(bg_frame, padx=10, pady=10, bg='#4D5660', bd=0)
+    item_frame_5.grid(row=4, column=1, sticky="NESW", padx=10, pady=10)
 
 def create_buttons_list(current_artworks):
+    destroy_item_frames()
+    reinitialize_frames()
+
     #calculating the number of pages
     num_pages = len(current_artworks) // 5
     artwork_buttons = []
@@ -162,7 +181,6 @@ def create_buttons_list(current_artworks):
     artworks_by_page = []
     for i in range(0, len(current_artworks), 5):
         artworks_by_page += [current_artworks[i:i + 5]]
-
 
     for page in artworks_by_page:
         artwork_buttons.append(Button(item_frame_1, text=page[0].name, fg='white', bg='#4D5660', relief='flat', font=("Segoe UI Black", 18), command=lambda: artwork_info_window(type(page[0]), 'view', page[0])))
@@ -187,9 +205,8 @@ def create_buttons_list(current_artworks):
             artwork_buttons.append(Button(item_frame_5, text=page[4].name, fg='white', bg='#4D5660', relief='flat', font=("Segoe UI Black", 18), command=lambda: artwork_info_window(type(page[4]), 'view', page[4])))
         except:
             pass
-    
-        return artwork_buttons, artworks_by_page
 
+    return artwork_buttons, artworks_by_page
 
 def setup_home(home_artworks, first_run=False):
     global artwork_button_1
@@ -199,8 +216,11 @@ def setup_home(home_artworks, first_run=False):
     global artwork_button_5
     global current_artworks
 
-    artwork_buttons, artworks_by_page = create_buttons_list(current_artworks)
     current_artworks = home_artworks
+    artwork_buttons, artworks_by_page = create_buttons_list(current_artworks)
+
+
+    
 
     if first_run == False:
            forget_home_buttons()
@@ -235,15 +255,10 @@ def setup_home(home_artworks, first_run=False):
     except:
         item_frame_5.destroy()
 
-
 def forget_home_buttons():
-    artwork_button_1.destroy()
-    artwork_button_2.destroy()
-    artwork_button_3.destroy()
-    artwork_button_4.destroy()
-    artwork_button_5.destroy()
-
-
+    buttons = [artwork_button_1, artwork_button_2, artwork_button_3, artwork_button_4, artwork_button_5]
+    for button in buttons:
+        button.destroy()
 
 def update_variables():
     global all_artworks
@@ -254,7 +269,111 @@ def update_variables():
     forget_home_buttons()
     setup_home(current_artworks)
 
-#save artowrk functions
+def scroll_forward(page_num):
+    global current_artworks
+    global forward_button
+    global back_button
+
+    global artwork_button_1
+    global artwork_button_2
+    global artwork_button_3
+    global artwork_button_4
+    global artwork_button_5
+
+    global item_frame_1
+    global item_frame_2
+    global item_frame_3
+    global item_frame_4
+    global item_frame_5
+
+    buttons = [artwork_button_1, artwork_button_2, artwork_button_3, artwork_button_4, artwork_button_5]
+    frames = [item_frame_1, item_frame_2, item_frame_3, item_frame_4, item_frame_5]
+
+    artwork_buttons, artworks_by_page = create_buttons_list(current_artworks)
+
+    #splitting the buttons by page
+    buttons_by_page = []
+    for i in range(0, len(artwork_buttons), 5):
+        buttons_by_page += [artwork_buttons[i:i + 5]]
+
+
+    #replaces all artwork buttons with that of the next page
+    forget_home_buttons()
+    for button_number in range(0, 5):
+        try:
+            buttons[button_number] = buttons_by_page[page_num - 1][button_number]
+            buttons[button_number].pack(side=LEFT)
+        except IndexError: 
+            frames[button_number].destroy()
+
+    
+
+    if page_num == len(buttons_by_page):
+        forward_button.config(state=DISABLED)
+    else:
+        forward_button.config(command=lambda: scroll_forward(page_num + 1), state=NORMAL)
+        back_button.config(command=lambda: scroll_back(page_num -1))
+
+    back_button.config(state=NORMAL)
+
+
+    forward_button.grid(row=2, column=2, sticky="NESW")
+    back_button.grid(row=2, column=0, sticky="NESW") 
+
+def scroll_back(page_num):
+    global current_artworks
+    global forward_button
+    global back_button
+
+    global artwork_button_1
+    global artwork_button_2
+    global artwork_button_3
+    global artwork_button_4
+    global artwork_button_5
+
+    global item_frame_1
+    global item_frame_2
+    global item_frame_3
+    global item_frame_4
+    global item_frame_5
+
+    buttons = [artwork_button_1, artwork_button_2, artwork_button_3, artwork_button_4, artwork_button_5]
+    frames = [item_frame_1, item_frame_2, item_frame_3, item_frame_4, item_frame_5]
+
+    artwork_buttons, artworks_by_page = create_buttons_list(current_artworks)
+
+    #splitting the buttons by page
+    buttons_by_page = []
+    for i in range(0, len(artwork_buttons), 5):
+        buttons_by_page += [artwork_buttons[i:i + 5]]
+
+
+    #replaces all artwork buttons with that of the next page
+    forget_home_buttons()
+    for button_number in range(0, 5):
+        try:
+            buttons[button_number] = buttons_by_page[page_num - 1][button_number]
+            buttons[button_number].pack(side=LEFT)
+        except IndexError: 
+            frames[button_number].destroy()
+
+    
+
+    if page_num == 1:
+        back_button.config(state=DISABLED)
+    else:
+        forward_button.config(command=lambda: scroll_forward(page_num + 1), state=NORMAL)
+        back_button.config(command=lambda: scroll_back(page_num - 1), state=NORMAL)
+
+    forward_button.config(state=NORMAL)
+
+    forward_button.grid(row=2, column=2, sticky="NESW")
+    back_button.grid(row=2, column=0, sticky="NESW") 
+
+
+
+
+#save artwork functions
 def save_original():
     name = name_inp.get()
     desc = desc_inp.get()
@@ -266,7 +385,6 @@ def save_original():
     original_list.append(new_original)
     update_variables()
     creation_window.destroy()
-
 
 def save_fanart():
     name = name_inp.get()
@@ -293,7 +411,6 @@ def update_original(artwork):
     update_variables()
     creation_window.destroy()
 
-
 def update_fanart(artwork):
     artwork.name = name_inp.get()
     artwork.desc = desc_inp.get()
@@ -310,15 +427,15 @@ def update_fanart(artwork):
 def filter_originals():
     filtered_originals = []
     #creates a list of all existing originals
-    for a in all_artworks:
-        if type(a) == Original:
-            filtered_originals.append(a)
+    # for a in all_artworks:
+    #     if type(a) == Original:
+    #         filtered_originals.append(a)
 
-    #filters based on which entry fields are full
-    if name_inp.get() != "":
-        for b in filtered_originals:
-            if b.name != name_inp.get():
-                filtered_originals.remove(b)
+    # #filters based on which entry fields are full
+    # if name_inp.get() != "":
+    #     for b in filtered_originals:
+    #         if b.name != name_inp.get():
+    #             filtered_originals.remove(b)
     # if desc_inp.get() != "":
     #     for c in filtered_originals:
     #         if c.name != desc_inp.get():
@@ -336,14 +453,13 @@ def filter_originals():
     #         if f.name != subject_inp.get():
     #             filtered_originals.remove(f)
     
-    for test in filtered_originals:
-        print(test.name)
+    # for test in filtered_originals:
+    #     print(test.name)
 
-    forget_home_buttons()
-    setup_home(filtered_originals)
+    # forget_home_buttons()
+    # setup_home(filtered_originals)
     
-    creation_window.destroy()
-
+    # creation_window.destroy()
 
 def filter_fanarts():
     filtered_fanarts = []
@@ -408,6 +524,7 @@ def artwork_info_window(arttype, action, artwork=None):
     # Create Dropdown menu 
     if action == 'filter':
         options = ["", "Planned", "In Progress", "Completed"] 
+        clicked.set("")
         status_inp = OptionMenu(info_frame, clicked, *options) 
     else:
         options = ["Planned", "In Progress", "Completed"] 
@@ -520,42 +637,6 @@ def artwork_info_window(arttype, action, artwork=None):
 
 
 
-
-
-# #creating the forward and back functions
-# def forward(page_num):
-#     artwork_button_1.grid_forget()
-#     artwork_button_2.grid_forget()
-#     artwork_button_3.grid_forget()
-#     artwork_button_4.grid_forget()
-#     artwork_button_5.grid_forget()
-
-#     artwork_button_1 = artwork_buttons[(page_num*5) - 5]
-#     artwork_button_1.pack(side=LEFT)
-#     artwork_button_2 = artwork_buttons[(page_num*5) - 4]
-#     artwork_button_2.pack(side=LEFT)
-#     artwork_button_3 = artwork_buttons[(page_num*5) - 3]
-#     artwork_button_3.pack(side=LEFT)
-#     artwork_button_4 = artwork_buttons[(page_num*5) - 2]
-#     artwork_button_4.pack(side=LEFT)
-#     artwork_button_5 = artwork_buttons[(page_num*5) - 1]
-#     artwork_button_5.pack(side=LEFT)
-
-#     button_forward = Button(root, text=">>", command=lambda: forward(label_num + 1))
-#     button_back = Button(root, text="<<", command=lambda: back(label_num - 1))
-
-#     if label_num == 5:
-#         button_forward = Button(root, text=">>", state=DISABLED)
-
-#     base_label.grid(row=0, column=0, columnspan=3)
-#     button_back.grid(row=1, column=0)
-#     button_forward.grid(row=1, column=2)  
-
-#     status = Label(root, text=f"Image {str(label_num)} of " + str(len(label_list)), bd=1, relief=SUNKEN, anchor=E)
-#     status.grid(row=2, column=0, columnspan=3, sticky=W+E) 
-
-
-
 #delete functionality
 def delete_artwork(artwork):
     if len(current_artworks) == 1:
@@ -603,6 +684,15 @@ current_artworks = all_artworks
 setup_home(current_artworks, first_run=True)
 
 
+forward_img = ImageTk.PhotoImage(Image.open("ArtTracker/resources/forward_icon.png"))
+back_img = ImageTk.PhotoImage(Image.open("ArtTracker/resources/back_icon.png"))
+
+forward_button = Button(bg_frame, text=">", image=forward_img, bg='#7B8292', bd=0, command=lambda: scroll_forward(2))
+forward_button.grid(row=2, column=2, sticky="NESW")
+back_button = Button(bg_frame, text=">", image=back_img, bg='#7B8292', bd=0, command=lambda: scroll_back(1), state=DISABLED)
+back_button.grid(row=2, column=0, sticky="NESW")
+
+
 #creating the delete icons
 delete_img = ImageTk.PhotoImage(Image.open("ArtTracker/resources/delete_icon.png"))
 
@@ -634,10 +724,7 @@ edit_5 = Button(item_frame_5, bd=0, text="Edit", image=edit_img, bg='#9399AC', c
 edit_5.pack(side=RIGHT, padx=10)
 
 
-
-
-
-#creating the options functionality
+#creating the options functionality to choose between original or fanart
 def choose_arttype(action):
     arttype_dialog = Toplevel(root)
     arttype_dialog.title("Choose art type")
@@ -672,9 +759,6 @@ def choose_arttype(action):
     fanart_btn.grid(row=0, column=1, padx=10, pady=10, sticky="NESW")
 
     
-
-
-
 #formatting the options strip
 options_frame = LabelFrame(root, padx=30, pady=30, bg='#4D5660', bd=0)
 options_frame.grid(row=0, column=2, sticky="NESW", rowspan=3)
